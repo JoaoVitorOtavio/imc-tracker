@@ -3,9 +3,13 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "npx nodemon src/server.ts --watch 'src/' -e ts",
+    "dev": "nodemon src/server.ts --watch 'src/' -e ts",
     "compile": "npx tsc",
-    "start": "node ./dist/server.js"
+    "start": "node ./dist/server.js",
+    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
+    "migration:generate": "npm run typeorm -- migration:generate -d src/database/data-source.ts",
+    "migration:run": "npm run typeorm -- migration:run -d src/database/data-source.ts",
+    "migration:revert": "npm run typeorm -- migration:revert -d src/database/data-source.ts"
   },
   "keywords": [],
   "author": "",
@@ -16,7 +20,10 @@
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "helmet": "^8.1.0",
-    "morgan": "^1.10.1"
+    "morgan": "^1.10.1",
+    "reflect-metadata": "^0.2.2",
+    "sqlite3": "^5.1.7",
+    "typeorm": "^0.3.25"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
@@ -24,6 +31,7 @@
     "@types/morgan": "^1.9.10",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.9.2"
   }
 }
