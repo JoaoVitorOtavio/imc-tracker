@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import userRepository from "../repositories/userRepository";
 import { User } from "../models/userModel";
 import { HttpError } from "../common/HttpError";
