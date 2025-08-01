@@ -9,7 +9,7 @@ import {
 import { User } from "./userModel";
 
 @Entity("usuario_token")
-export class UsuarioToken {
+export class UserToken {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 

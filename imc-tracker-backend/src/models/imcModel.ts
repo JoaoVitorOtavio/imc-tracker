@@ -9,7 +9,7 @@ import {
 import { User } from "./userModel";
 
 @Entity("avaliacao_imc")
-export class AvaliacaoImc {
+export class HealthCheck {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
