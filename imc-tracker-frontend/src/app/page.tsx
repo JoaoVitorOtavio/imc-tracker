@@ -1,95 +1,86 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
 
-export default function Home() {
+import { useForm } from "react-hook-form";
+import { Button, Card, Field, Flex, Input, Stack } from "@chakra-ui/react";
+import { useLogin } from "@/hooks/useLogin";
+
+type Inputs = {
+  usuario: string;
+  senha: string;
+};
+
+export default function Login() {
+  const { mutate: login, isPending } = useLogin();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<Inputs>();
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+    <Flex
+      height={"100vh"}
+      align={"center"}
+      justify={"center"}
+      style={{ backgroundColor: "red" }}
+    >
+      <Card.Root maxW="lg" width={"100%"}>
+        <form onSubmit={handleSubmit((data) => login(data))}>
+          <Card.Header alignItems={"center"}>
+            <Card.Title fontSize={"2xl"} fontWeight={600}>
+              Login
+            </Card.Title>
+          </Card.Header>
+          <Card.Body>
+            <Stack gap="4" w="full">
+              <Field.Root invalid={errors.usuario ? true : false}>
+                <Field.Label>Usuário</Field.Label>
+                <Input
+                  id="usuario"
+                  placeholder="Usuário"
+                  {...register("usuario", {
+                    required: "Este campo é obrigatório",
+                  })}
+                />
+                <Field.ErrorText>
+                  {errors.usuario && errors.usuario.message}
+                </Field.ErrorText>
+              </Field.Root>
+              <Field.Root invalid={errors.senha ? true : false}>
+                <Field.Label>Senha</Field.Label>
+                <Input
+                  id="senha"
+                  placeholder="Senha"
+                  type="password"
+                  {...register("senha", {
+                    required: "Este campo é obrigatório",
+                    minLength: {
+                      value: 6,
+                      message: "Minimum length should be 6",
+                    },
+                  })}
+                />
+                <Field.ErrorText>
+                  {errors.senha && errors.senha.message}
+                </Field.ErrorText>
+              </Field.Root>
+            </Stack>
+          </Card.Body>
+          <Card.Footer justifyContent="center">
+            <Button
+              loading={isPending}
+              type="submit"
+              size="sm"
+              width={"40%"}
+              variant="solid"
+              loadingText="Entrando..."
+            >
+              Entrar
+            </Button>
+          </Card.Footer>
+        </form>
+      </Card.Root>
+    </Flex>
   );
 }
