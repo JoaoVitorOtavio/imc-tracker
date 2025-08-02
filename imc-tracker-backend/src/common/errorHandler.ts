@@ -2,7 +2,12 @@ import { Request, Response, NextFunction } from "express";
 import { QueryFailedError } from "typeorm";
 import { HttpError } from "./HttpError";
 
-export function errorHandler(err: any, req: Request, res: Response) {
+export function errorHandler(
+  err: any,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   const isSqliteConstraintError =
     err instanceof QueryFailedError &&
     err.driverError?.code === "SQLITE_CONSTRAINT" &&
@@ -23,7 +28,7 @@ export function errorHandler(err: any, req: Request, res: Response) {
 
       // Se foi ao inserir/atualizar com FK inválida
       return res.status(422).json({
-        error: "O recurso relacionado informado não existe.",
+        error: "FK informada não existe.",
       });
     }
 
