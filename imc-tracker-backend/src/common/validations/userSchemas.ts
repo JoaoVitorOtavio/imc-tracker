@@ -4,7 +4,10 @@ import { Situacao } from "../enums/situacao.enum";
 
 export const updateUserSchema = yup.object({
   params: yup.object({
-    id: yup.string().required("O id deve ser informado"),
+    id: yup
+      .string()
+      .uuid("Id deve ser um UUID válido")
+      .required("O id deve ser informado"),
   }),
   body: yup.object({
     nome: yup.string().max(60, "O nome deve ter no máximo 60 caracteres"),
@@ -44,12 +47,18 @@ export const createUserSchema = yup.object({
 
 export const getUserSchema = yup.object({
   params: yup.object({
-    id: yup.string().required("O id deve ser informado"),
+    id: yup
+      .string()
+      .uuid("Id deve ser um UUID válido")
+      .required("O id deve ser informado"),
   }),
 });
 
 export const deleteUserSchema = yup.object({
   params: yup.object({
-    id: yup.string().required("O id deve ser informado"),
+    id: yup
+      .string()
+      .uuid("Id deve ser um UUID válido")
+      .required("O id deve ser informado"),
   }),
 });
