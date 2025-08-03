@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { Button, Card, Field, Flex, Input, Stack } from "@chakra-ui/react";
 import { useLogin } from "@/hooks/useLogin";
 
-type Inputs = {
+type TLogin = {
   usuario: string;
   senha: string;
 };
@@ -16,7 +16,7 @@ export default function Login() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<Inputs>();
+  } = useForm<TLogin>();
 
   return (
     <Flex

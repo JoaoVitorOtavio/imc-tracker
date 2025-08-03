@@ -1,11 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
-import { authService } from "@/services/authService";
+import { authService } from "@/services/auth/authService";
 import { toaster } from "@/components/ui/toaster";
 import { AxiosError } from "axios";
-
-interface ErrorResponse {
-  error: string;
-}
+import { ErrorResponse } from "@/common/interfaces/error-response.interface";
 
 export function useLogin() {
   return useMutation({
