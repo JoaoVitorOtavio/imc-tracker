@@ -6,7 +6,7 @@ import axios from "axios";
 import { useParams, notFound } from "next/navigation";
 import { useEffect } from "react";
 
-export default function CreateUser() {
+export default function EditUser() {
   const params = useParams();
   const userId = params.id;
 
