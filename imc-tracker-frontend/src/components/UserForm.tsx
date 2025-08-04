@@ -15,7 +15,6 @@ import {
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { PasswordInput } from "./ui/password-input";
-import { useEffect } from "react";
 import { User } from "@/common/interfaces/user/user.interface";
 import { EditUser } from "@/common/interfaces/user/edit-user.intercace";
 import { useEditUser } from "@/hooks/user/useEditUser";
@@ -27,7 +26,6 @@ export default function UserForm({
   isEdit?: boolean;
   user?: User;
 }) {
-  console.log("isEdit", isEdit);
   const { mutate: createUser, isPending: isCreateLoading } = useCreateUser();
   const { mutate: editUser, isPending: isEditLoading } = useEditUser();
 
@@ -62,7 +60,7 @@ export default function UserForm({
           >
             <Card.Header alignItems={"center"}>
               <Card.Title fontSize={"2xl"} fontWeight={600}>
-                {isEdit ? "Edição" : "Criação"} de usuário
+                {isEdit ? "Edição" : "Cadastro"} de usuário
               </Card.Title>
             </Card.Header>
             <Card.Body>
@@ -157,7 +155,7 @@ export default function UserForm({
                 width={"40%"}
                 variant="solid"
               >
-                {isEdit ? "Editar" : "Criar"}
+                {isEdit ? "Editar" : "Cadastrar"}
               </Button>
             </Card.Footer>
           </form>
