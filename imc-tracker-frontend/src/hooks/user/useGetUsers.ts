@@ -1,10 +1,19 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { TEN_MINUTES_IN_MS } from "@/common/constants";
 import { Perfil } from "@/common/enums/perfil.enum";
 import { Users } from "@/common/interfaces/user/users.interface";
 import { getUsers } from "@/services/user/getUsers";
 import { useQuery } from "@tanstack/react-query";
 
-export function useGetUsers(page: number, limit: number, role?: Perfil) {
+export function useGetUsers({
+  page,
+  limit,
+  role,
+}: {
+  page?: number;
+  limit?: number;
+  role?: Perfil;
+}) {
   return useQuery<Users>({
     queryKey: ["users", page, limit, role],
     queryFn: async ({ queryKey }) => {
@@ -17,6 +26,6 @@ export function useGetUsers(page: number, limit: number, role?: Perfil) {
       return getUsers(page, limit, role);
     },
     placeholderData: (prev) => prev,
-    staleTime: 300000,
+    staleTime: TEN_MINUTES_IN_MS,
   });
 }

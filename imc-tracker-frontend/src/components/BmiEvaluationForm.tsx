@@ -27,9 +27,6 @@ export default function BmiEvaluation({
   isEdit?: boolean;
   bmiEvaluation?: IBmiEvaluation;
 }) {
-  const PAGE = 1;
-  const LIMIT = 15;
-
   const { mutate: createBmiEvaluation, isPending: isCreateLoading } =
     useCreateBmiEvaluation();
 
@@ -50,17 +47,13 @@ export default function BmiEvaluation({
     },
   });
 
-  const { data: teachers, isLoading: loadingTeachers } = useGetUsers(
-    PAGE,
-    LIMIT,
-    Perfil.PROFESSOR
-  );
+  const { data: teachers, isLoading: loadingTeachers } = useGetUsers({
+    role: Perfil.PROFESSOR,
+  });
 
-  const { data: students, isLoading: loadingStudents } = useGetUsers(
-    PAGE,
-    LIMIT,
-    Perfil.ALUNO
-  );
+  const { data: students, isLoading: loadingStudents } = useGetUsers({
+    role: Perfil.ALUNO,
+  });
 
   const selectedTeacher = watch("id_usuario_avaliacao");
   const selectedStudent = watch("id_usuario_aluno");
