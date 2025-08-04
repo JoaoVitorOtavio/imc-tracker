@@ -1,0 +1,22 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { Perfil } from "@/common/enums/perfil.enum";
+import { Users } from "@/common/interfaces/user/users.interface";
+import { getUsers } from "@/services/user/getUsers";
+import { useQuery } from "@tanstack/react-query";
+
+export function useGetUsers(page: number, limit: number, role?: Perfil) {
+  return useQuery<Users>({
+    queryKey: ["users", page, limit, role],
+    queryFn: async ({ queryKey }) => {
+      const [_key, page, limit, role] = queryKey as [
+        string,
+        number,
+        number,
+        Perfil?
+      ];
+      return getUsers(page, limit, role);
+    },
+    placeholderData: (prev) => prev,
+    staleTime: 300000,
+  });
+}
