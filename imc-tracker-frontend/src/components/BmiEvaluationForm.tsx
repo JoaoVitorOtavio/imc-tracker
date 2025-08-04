@@ -19,6 +19,7 @@ import { useForm } from "react-hook-form";
 import { BmiEvaluation as IBmiEvaluation } from "@/common/interfaces/bmi-evaluation/bmi-evaluation.interface";
 import { useEditBmiEvaluation } from "@/hooks/bmiEvaluation/useEditBmiEvaluation";
 import { EditBmiEvaluation } from "@/common/interfaces/bmi-evaluation/edit-bmi-evaluation.interface";
+import { useRouter } from "next/navigation";
 
 export default function BmiEvaluation({
   isEdit,
@@ -27,11 +28,17 @@ export default function BmiEvaluation({
   isEdit?: boolean;
   bmiEvaluation?: IBmiEvaluation;
 }) {
+  const router = useRouter();
+
+  function onEditSuccess() {
+    router.replace("/bmi-evaluation/list");
+  }
+
   const { mutate: createBmiEvaluation, isPending: isCreateLoading } =
     useCreateBmiEvaluation();
 
   const { mutate: editBmiEvaluation, isPending: isEditLoading } =
-    useEditBmiEvaluation();
+    useEditBmiEvaluation(onEditSuccess);
 
   const {
     register,
@@ -209,6 +216,16 @@ export default function BmiEvaluation({
             </Card.Body>
             <Card.Footer justifyContent="center">
               <Button
+                size="sm"
+                width={"40%"}
+                variant="solid"
+                colorPalette={"red"}
+                onClick={() => router.replace("/bmi-evaluation/list")}
+              >
+                Cancelar
+              </Button>
+              <Button
+                colorPalette={"blue"}
                 loading={isEdit ? isEditLoading : isCreateLoading}
                 type="submit"
                 size="sm"
