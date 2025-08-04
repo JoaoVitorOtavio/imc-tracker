@@ -31,9 +31,19 @@ async function getBmiEvaluations(
   next: NextFunction
 ) {
   try {
-    const bmiEvaluations = await BmiEvaluationRepository.getBmiEvaluations();
+    const { page, limit, id_usuario_aluno, id_usuario_avaliacao } = req.query;
 
-    return res.status(200).json(bmiEvaluations);
+    const pageNumber = page ? parseInt(page as string, 10) : undefined;
+    const limitNumber = limit ? parseInt(limit as string, 10) : undefined;
+
+    const result = await BmiEvaluationRepository.getBmiEvaluations({
+      page: pageNumber,
+      limit: limitNumber,
+      id_usuario_aluno: id_usuario_aluno as string,
+      id_usuario_avaliacao: id_usuario_avaliacao as string,
+    });
+
+    return res.status(200).json(result);
   } catch (error) {
     console.error("Erro ao buscar avaliação IMC:", error);
 
