@@ -2,6 +2,7 @@ import { AppDataSource } from "../database/data-source";
 import { User } from "../models/userModel";
 import * as bcrypt from "bcrypt";
 import { HttpError } from "../common/HttpError";
+import { Perfil } from "src/common/enums/perfil.enum";
 
 async function getUser(id: string): Promise<User | null> {
   const userRepository = AppDataSource.getRepository(User);
@@ -11,12 +12,47 @@ async function getUser(id: string): Promise<User | null> {
   return user;
 }
 
-async function getUsers(): Promise<User[]> {
+type GetUsersOptions = {
+  page?: number;
+  limit?: number;
+  role?: Perfil;
+};
+
+type GetUsersResponse = {
+  data: User[];
+  total: number;
+  currentPage?: number;
+  totalPages?: number;
+};
+
+async function getUsers({
+  page = 1,
+  limit = 15,
+  role,
+}: GetUsersOptions): Promise<GetUsersResponse> {
   const userRepository = AppDataSource.getRepository(User);
 
-  const users = await userRepository.find();
+  const where: any = {};
 
-  return users;
+  if (role) {
+    where.perfil = role;
+  }
+
+  const [users, total] = await userRepository.findAndCount({
+    where,
+    skip: (page - 1) * limit,
+    take: limit,
+    order: {
+      dt_inclusao: "ASC",
+    },
+  });
+
+  return {
+    data: users,
+    total,
+    currentPage: page,
+    totalPages: Math.ceil(total / limit),
+  };
 }
 
 async function createUser(user: User) {

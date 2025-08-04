@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import userRepository from "../repositories/userRepository";
 import { User } from "../models/userModel";
 import { HttpError } from "../common/HttpError";
-import { QueryFailedError } from "typeorm";
+import { Perfil } from "src/common/enums/perfil.enum";
 
 async function getUser(req: Request, res: Response, next: NextFunction) {
   try {
@@ -22,11 +22,20 @@ async function getUser(req: Request, res: Response, next: NextFunction) {
   }
 }
 
-async function getUsers(_req: Request, res: Response, next: NextFunction) {
+async function getUsers(req: Request, res: Response, next: NextFunction) {
   try {
-    const users = await userRepository.getUsers();
+    const { page, limit, role } = req.query;
 
-    return res.status(200).json(users);
+    const pageNumber = page ? parseInt(page as string, 10) : undefined;
+    const limitNumber = limit ? parseInt(limit as string, 10) : undefined;
+
+    const result = await userRepository.getUsers({
+      page: pageNumber,
+      limit: limitNumber,
+      role: role as Perfil,
+    });
+
+    return res.status(200).json(result);
   } catch (error) {
     console.error("Erro ao buscar usuários:", error);
 
