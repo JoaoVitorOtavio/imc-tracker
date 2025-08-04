@@ -3,6 +3,10 @@ import { User } from "../models/userModel";
 import * as bcrypt from "bcrypt";
 import { HttpError } from "../common/HttpError";
 import { Perfil } from "src/common/enums/perfil.enum";
+import {
+  GetUsersOptions,
+  GetUsersResponse,
+} from "src/common/interfaces/user.interfaces";
 
 async function getUser(id: string): Promise<User | null> {
   const userRepository = AppDataSource.getRepository(User);
@@ -12,22 +16,9 @@ async function getUser(id: string): Promise<User | null> {
   return user;
 }
 
-type GetUsersOptions = {
-  page?: number;
-  limit?: number;
-  role?: Perfil;
-};
-
-type GetUsersResponse = {
-  data: User[];
-  total: number;
-  currentPage?: number;
-  totalPages?: number;
-};
-
 async function getUsers({
-  page = 1,
-  limit = 15,
+  page,
+  limit,
   role,
 }: GetUsersOptions): Promise<GetUsersResponse> {
   const userRepository = AppDataSource.getRepository(User);
@@ -38,20 +29,22 @@ async function getUsers({
     where.perfil = role;
   }
 
+  const shouldPaginate = page !== undefined && limit !== undefined;
+
   const [users, total] = await userRepository.findAndCount({
     where,
-    skip: (page - 1) * limit,
-    take: limit,
+    skip: shouldPaginate ? (page - 1) * limit : undefined,
+    take: shouldPaginate ? limit : undefined,
     order: {
-      dt_inclusao: "ASC",
+      nome: "ASC",
     },
   });
 
   return {
     data: users,
     total,
-    currentPage: page,
-    totalPages: Math.ceil(total / limit),
+    currentPage: page ?? 1,
+    totalPages: shouldPaginate ? Math.ceil(total / limit!) : 1,
   };
 }
 
