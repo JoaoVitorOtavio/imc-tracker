@@ -169,13 +169,6 @@ export default function ListBmiEvaluation() {
                   </Table.Cell>
                 </Table.Row>
               ))}
-              {/* {items.map((item) => (
-              <Table.Row key={item.id}>
-                <Table.Cell>{item.name}</Table.Cell>
-                <Table.Cell>{item.category}</Table.Cell>
-                <Table.Cell textAlign="end">{item.price}</Table.Cell>
-              </Table.Row>
-            ))} */}
             </Table.Body>
           </Table.Root>
 
