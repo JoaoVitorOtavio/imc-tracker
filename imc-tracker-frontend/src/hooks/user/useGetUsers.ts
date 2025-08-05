@@ -9,21 +9,24 @@ export function useGetUsers({
   page,
   limit,
   role,
+  nameOrUsername,
 }: {
   page?: number;
   limit?: number;
   role?: Perfil;
+  nameOrUsername?: string;
 }) {
   return useQuery<Users>({
-    queryKey: ["users", page, limit, role],
+    queryKey: ["users", page, limit, role, nameOrUsername],
     queryFn: async ({ queryKey }) => {
       const [_key, page, limit, role] = queryKey as [
         string,
         number,
         number,
-        Perfil?
+        Perfil,
+        string
       ];
-      return getUsers(page, limit, role);
+      return getUsers(page, limit, role, nameOrUsername);
     },
     placeholderData: (prev) => prev,
     staleTime: TEN_MINUTES_IN_MS,

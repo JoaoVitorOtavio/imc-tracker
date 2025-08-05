@@ -5,10 +5,11 @@ import axios from "axios";
 export const getUsers = async (
   page?: number,
   limit?: number,
-  role?: Perfil
+  role?: Perfil,
+  nameOrUsername?: string
 ): Promise<Users> => {
   const response = await axios.get(`http://localhost:3001/users`, {
-    params: { role, page, limit },
+    params: { role, page, limit, nameOrUsername },
   });
 
   return response.data;
