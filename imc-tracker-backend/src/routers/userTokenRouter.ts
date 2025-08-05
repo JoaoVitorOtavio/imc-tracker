@@ -2,6 +2,7 @@ import express from "express";
 import { validate } from "../common/middlewares/validate";
 import userTokenController from "../controllers/userTokenController";
 import {
+  createUserTokenSchema,
   deleteUserTokenSchema,
   getUserTokenSchema,
   updateUserTokenSchema,
@@ -17,7 +18,11 @@ router.get(
   userTokenController.getUserToken
 );
 
-router.post("/", userTokenController.createUserToken);
+router.post(
+  "/",
+  validate(createUserTokenSchema),
+  userTokenController.createUserToken
+);
 
 router.put(
   "/:id",
