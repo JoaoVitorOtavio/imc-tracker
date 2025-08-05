@@ -10,6 +10,14 @@ async function getUserToken(id: string): Promise<UserToken | null> {
   return userToken;
 }
 
+async function getUserTokenByUserId(userId: string): Promise<UserToken | null> {
+  const userTokenRepository = AppDataSource.getRepository(UserToken);
+
+  const userToken = await userTokenRepository.findOneBy({ id_usuario: userId });
+
+  return userToken;
+}
+
 async function getUsersTokens(): Promise<UserToken[]> {
   const userTokenRepository = AppDataSource.getRepository(UserToken);
 
@@ -55,4 +63,5 @@ export default {
   createUserToken,
   updateUserToken,
   deleteUserToken,
+  getUserTokenByUserId,
 };
