@@ -46,16 +46,18 @@ export default function UserList() {
 
   return (
     <Stack width="full" gap="5">
-      <Flex gap="4" align="center">
-        <Field.Root>
-          <Input
-            onChange={(e) => handleSearch(e.target.value)}
-            id="saerchInput"
-            size="sm"
-            placeholder="Pesquisar por nome ou usuário"
-          />
-        </Field.Root>
-      </Flex>
+      <Skeleton loading={loadingUsers || isDeleteLoading}>
+        <Flex gap="4" align="center">
+          <Field.Root>
+            <Input
+              onChange={(e) => handleSearch(e.target.value)}
+              id="saerchInput"
+              size="sm"
+              placeholder="Pesquisar por nome ou usuário"
+            />
+          </Field.Root>
+        </Flex>
+      </Skeleton>
 
       <Skeleton loading={loadingUsers || isDeleteLoading}>
         <Table.Root size="md" variant="outline" striped>
