@@ -1,12 +1,17 @@
 import { EditBmiEvaluation } from "@/common/interfaces/bmi-evaluation/edit-bmi-evaluation.interface";
-import axios from "axios";
+import { customAxios } from "@/utils/apis/CustomAxios";
 
 export const editBmiEvaluation = async (
   id: string,
   bmiEvaluation: EditBmiEvaluation
 ) => {
-  return axios.put(
-    `http://localhost:3001/bmi/evaluations/${id}`,
-    bmiEvaluation
+  const response = await customAxios.put(
+    `/bmi/evaluations/${id}`,
+    bmiEvaluation,
+    {
+      withCredentials: true,
+    }
   );
+
+  return response;
 };

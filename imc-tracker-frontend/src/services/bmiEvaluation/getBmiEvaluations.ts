@@ -1,5 +1,5 @@
 import { BmiEvaluations } from "@/common/interfaces/bmi-evaluation/bmi-evaluations.interface";
-import axios from "axios";
+import { customAxios } from "@/utils/apis/CustomAxios";
 
 export const getBmiEvaluations = async (
   page: number,
@@ -7,8 +7,9 @@ export const getBmiEvaluations = async (
   id_usuario_aluno?: string,
   id_usuario_avaliacao?: string
 ): Promise<BmiEvaluations> => {
-  const response = await axios.get("http://localhost:3001/bmi/evaluations", {
+  const response = await customAxios.get("/bmi/evaluations", {
     params: { page, limit, id_usuario_aluno, id_usuario_avaliacao },
+    withCredentials: true,
   });
 
   return response.data;

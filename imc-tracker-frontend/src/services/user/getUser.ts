@@ -1,8 +1,10 @@
 import { User } from "@/common/interfaces/user/user.interface";
-import axios from "axios";
+import { customAxios } from "@/utils/apis/CustomAxios";
 
 export const getUser = async (id: string): Promise<User> => {
-  const response = await axios.get<User>(`http://localhost:3001/users/${id}`);
+  const response = await customAxios.get(`/users/${id}`, {
+    withCredentials: true,
+  });
 
   return response.data;
 };

@@ -1,6 +1,10 @@
 import { EditUser } from "@/common/interfaces/user/edit-user.intercace";
-import axios from "axios";
+import { customAxios } from "@/utils/apis/CustomAxios";
 
 export const editUser = async (id: string, user: EditUser) => {
-  return axios.put(`http://localhost:3001/users/${id}`, user);
+  const response = await customAxios.put(`/users/${id}`, user, {
+    withCredentials: true,
+  });
+
+  return response;
 };

@@ -1,5 +1,9 @@
-import axios from "axios";
+import { customAxios } from "@/utils/apis/CustomAxios";
 
 export const deleteBmiEvaluation = async (id: string) => {
-  return axios.delete(`http://localhost:3001/bmi/evaluations/${id}`);
+  const response = await customAxios.delete(`/bmi/evaluations/${id}`, {
+    withCredentials: true,
+  });
+
+  return response;
 };

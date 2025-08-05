@@ -1,5 +1,9 @@
-import axios from "axios";
+import { customAxios } from "@/utils/apis/CustomAxios";
 
 export const deleteUser = async (id: string) => {
-  return axios.delete(`http://localhost:3001/users/${id}`);
+  const response = customAxios.delete(`/users/${id}`, {
+    withCredentials: true,
+  });
+
+  return response;
 };
