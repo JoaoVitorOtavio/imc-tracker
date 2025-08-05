@@ -1,12 +1,12 @@
 import { useMutation } from "@tanstack/react-query";
-import { authService } from "@/services/auth/authService";
 import { toaster } from "@/components/ui/toaster";
 import { AxiosError } from "axios";
 import { ErrorResponse } from "@/common/interfaces/error-response.interface";
+import { login } from "@/services/auth/login";
 
 export function useLogin() {
   return useMutation({
-    mutationFn: authService.login,
+    mutationFn: login,
     onSuccess: (data) => {
       toaster.create({
         title: `Login feito com sucesso`,
