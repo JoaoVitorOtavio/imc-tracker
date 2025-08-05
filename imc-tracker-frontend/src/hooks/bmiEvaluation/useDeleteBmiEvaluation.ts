@@ -24,7 +24,7 @@ export function useDeleteBmiEvaluation() {
         error.response?.data?.error ||
         "Erro ao deletar avaliação de IMC, por favor tente novamente mais tarde";
 
-      toaster.create({
+      toaster.error({
         title: errorMessage,
         type: "error",
         duration: 3000,

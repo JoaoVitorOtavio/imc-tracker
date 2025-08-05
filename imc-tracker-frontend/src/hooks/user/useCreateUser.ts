@@ -22,7 +22,7 @@ export function useCreateUser() {
         error.response?.data?.error ||
         "Erro ao criar usuário, por favor tente novamente mais tarde";
 
-      toaster.create({
+      toaster.error({
         title: errorMessage,
         type: "error",
         duration: 3000,
