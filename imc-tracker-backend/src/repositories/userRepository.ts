@@ -7,6 +7,7 @@ import {
   GetUsersOptions,
   GetUsersResponse,
 } from "src/common/interfaces/user.interfaces";
+import { Like } from "typeorm";
 
 async function getUser(id: string): Promise<User | null> {
   const userRepository = AppDataSource.getRepository(User);
@@ -20,19 +21,31 @@ async function getUsers({
   page,
   limit,
   role,
+  nameOrUsername,
 }: GetUsersOptions): Promise<GetUsersResponse> {
   const userRepository = AppDataSource.getRepository(User);
 
-  const where: any = {};
+  const where: any[] = [];
+
+  if (nameOrUsername) {
+    where.push({ nome: Like(`%${nameOrUsername}%`) });
+    where.push({ usuario: Like(`%${nameOrUsername}%`) });
+  }
 
   if (role) {
-    where.perfil = role;
+    if (where.length > 0) {
+      for (let i = 0; i < where.length; i++) {
+        where[i] = { ...where[i], perfil: role };
+      }
+    } else {
+      where.push({ perfil: role });
+    }
   }
 
   const shouldPaginate = page !== undefined && limit !== undefined;
 
   const [users, total] = await userRepository.findAndCount({
-    where,
+    where: where.length > 0 ? where : {},
     skip: shouldPaginate ? (page - 1) * limit : undefined,
     take: shouldPaginate ? limit : undefined,
     order: {

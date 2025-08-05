@@ -5,6 +5,7 @@ export interface GetUsersOptions {
   page?: number;
   limit?: number;
   role?: Perfil;
+  nameOrUsername?: string;
 }
 
 export interface GetUsersResponse {
