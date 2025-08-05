@@ -18,6 +18,7 @@ import { PasswordInput } from "./ui/password-input";
 import { User } from "@/common/interfaces/user/user.interface";
 import { EditUser } from "@/common/interfaces/user/edit-user.intercace";
 import { useEditUser } from "@/hooks/user/useEditUser";
+import { useRouter } from "next/navigation";
 
 export default function UserForm({
   isEdit,
@@ -26,8 +27,15 @@ export default function UserForm({
   isEdit?: boolean;
   user?: User;
 }) {
+  const router = useRouter();
+
+  function onEditSuccess() {
+    router.replace("/user/list");
+  }
+
   const { mutate: createUser, isPending: isCreateLoading } = useCreateUser();
-  const { mutate: editUser, isPending: isEditLoading } = useEditUser();
+  const { mutate: editUser, isPending: isEditLoading } =
+    useEditUser(onEditSuccess);
 
   const {
     register,
@@ -149,6 +157,17 @@ export default function UserForm({
             </Card.Body>
             <Card.Footer justifyContent="center">
               <Button
+                size="sm"
+                width={"40%"}
+                variant="solid"
+                colorPalette={"red"}
+                onClick={() => router.replace("/user/list")}
+              >
+                Cancelar
+              </Button>
+
+              <Button
+                colorPalette={"blue"}
                 loading={isEdit ? isEditLoading : isCreateLoading}
                 type="submit"
                 size="sm"

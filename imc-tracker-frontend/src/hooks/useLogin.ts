@@ -22,7 +22,7 @@ export function useLogin() {
         error.response?.data?.error ||
         "Erro ao fazer login, por favor tente novamente mais tarde";
 
-      toaster.create({
+      toaster.error({
         title: errorMessage,
         type: "error",
         duration: 3000,
