@@ -26,7 +26,9 @@ export function useGetUsers({
         Perfil,
         string
       ];
-      return getUsers(page, limit, role, nameOrUsername);
+      const response = await getUsers(page, limit, role, nameOrUsername);
+
+      return response;
     },
     placeholderData: (prev) => prev,
     staleTime: TEN_MINUTES_IN_MS,
