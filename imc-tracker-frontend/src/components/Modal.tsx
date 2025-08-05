@@ -25,7 +25,7 @@ export default function Modal({
 }) {
   const dialog = useDialog();
 
-  const teste = () => {
+  const handleOnConfirm = () => {
     if (confirmFunc) {
       confirmFunc();
     }
@@ -64,7 +64,7 @@ export default function Modal({
                   </Dialog.ActionTrigger>
                 )}
                 {confirmBtnTitle && (
-                  <Button onClick={teste}>
+                  <Button onClick={handleOnConfirm} colorPalette={"red"}>
                     {confirmBtnTitle || "Confirm"}
                   </Button>
                 )}
