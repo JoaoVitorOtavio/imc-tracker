@@ -25,6 +25,7 @@ export function useCreateBmiEvaluation(onSuccess?: () => void) {
     },
     onError: (error: AxiosError<ErrorResponse>) => {
       const errorMessage =
+        error.response?.data?.message ||
         error.response?.data?.error ||
         "Erro ao criar avaliação de IMC, por favor tente novamente mais tarde";
 

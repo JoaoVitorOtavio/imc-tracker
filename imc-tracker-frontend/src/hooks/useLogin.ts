@@ -21,6 +21,7 @@ export function useLogin(onSuccess?: () => void) {
     },
     onError: (error: AxiosError<ErrorResponse>) => {
       const errorMessage =
+        error.response?.data?.message ||
         error.response?.data?.error ||
         "Erro ao fazer login, por favor tente novamente mais tarde";
 

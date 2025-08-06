@@ -23,6 +23,7 @@ export function useDeleteUser() {
     },
     onError: (error: AxiosError<ErrorResponse>) => {
       const errorMessage =
+        error.response?.data?.message ||
         error.response?.data?.error ||
         "Erro ao excluir usuário, por favor tente novamente mais tarde";
 

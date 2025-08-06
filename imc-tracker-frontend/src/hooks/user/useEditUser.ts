@@ -33,6 +33,7 @@ export function useEditUser(onSuccess?: () => void) {
     },
     onError: (error: AxiosError<ErrorResponse>) => {
       const errorMessage =
+        error.response?.data?.message ||
         error.response?.data?.error ||
         "Erro ao editar usuário, por favor tente novamente mais tarde";
 
