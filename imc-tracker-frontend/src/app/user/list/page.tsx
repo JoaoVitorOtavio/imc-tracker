@@ -28,6 +28,7 @@ import { LuChevronLeft, LuChevronRight } from "react-icons/lu";
 import { FaCirclePlus } from "react-icons/fa6";
 import { useUserStorage } from "@/hooks/useUserStorage";
 import { useProtectedRoute } from "@/hooks/useProtectedRoute";
+import { Perfil } from "@/common/enums/perfil.enum";
 
 export default function UserList() {
   const router = useRouter();
@@ -39,11 +40,13 @@ export default function UserList() {
   const [search, setSearch] = useState<string>("");
 
   const userStorage = useUserStorage();
+  const isProfessor = userStorage?.perfil === Perfil.PROFESSOR;
 
   const { data: users, isLoading: loadingUsers } = useGetUsers({
     page,
     limit: LIMIT,
     nameOrUsername: search,
+    role: isProfessor ? Perfil.ALUNO : undefined,
   });
 
   const { mutate: deleteUser, isPending: isDeleteLoading } = useDeleteUser();
@@ -81,135 +84,136 @@ export default function UserList() {
     <Flex minHeight={"100vh"} direction={"column"} justify={"space-between"}>
       <Header />
       <Stack width="full" gap="5" px={12} mt={5}>
-        {!users?.data.length ? (
-          <div>Nenhum usuário encontrado</div>
-        ) : (
-          <>
-            <Heading size="xl" display={"flex"} justifyContent={"center"}>
-              Listagem de avaliações de usuários
-            </Heading>
-            <Skeleton loading={loadingUsers || isDeleteLoading}>
-              <Flex
-                gap="4"
-                align="center"
-                mt={5}
-                px={5}
-                direction={{ base: "column", md: "row" }}
-              >
-                <Button
-                  width={{ base: "80%", md: "auto" }}
-                  colorPalette="green"
-                  variant="surface"
-                  size="sm"
-                  onClick={() => router.push("/user/create")}
-                >
-                  <FaCirclePlus /> Adicionar novo usuário
-                </Button>
-                <Input
-                  width="80%"
-                  onChange={(e) => handleSearch(e.target.value)}
-                  id="searchInput"
-                  size="sm"
-                  placeholder="Pesquisar por nome ou usuário"
-                  bg="white"
-                  color="black"
-                  _placeholder={{ color: "gray.500" }}
-                  borderColor="gray.300"
-                />
-              </Flex>
-            </Skeleton>
-            <Skeleton loading={loadingUsers || isDeleteLoading}>
-              <div style={{ overflowX: "auto" }}>
-                <Table.Root size="md" variant="outline" striped>
-                  <Table.Header>
-                    <Table.Row>
-                      <Table.ColumnHeader>Nome</Table.ColumnHeader>
-                      <Table.ColumnHeader>Usuario</Table.ColumnHeader>
-                      <Table.ColumnHeader>Perfil</Table.ColumnHeader>
-                      <Table.ColumnHeader>Situação</Table.ColumnHeader>
-                      <Table.ColumnHeader>Data de inclusão</Table.ColumnHeader>
-                      <Table.ColumnHeader textAlign="end"></Table.ColumnHeader>
+        <Heading size="xl" display={"flex"} justifyContent={"center"}>
+          Listagem de avaliações de usuários
+        </Heading>
+        <Skeleton loading={loadingUsers || isDeleteLoading}>
+          <Flex
+            gap="4"
+            align="center"
+            mt={5}
+            px={5}
+            direction={{ base: "column", md: "row" }}
+          >
+            <Button
+              width={{ base: "80%", md: "auto" }}
+              colorPalette="green"
+              variant="surface"
+              size="sm"
+              onClick={() => router.push("/user/create")}
+            >
+              <FaCirclePlus /> Adicionar novo{" "}
+              {isProfessor ? "aluno" : "usuário"}
+            </Button>
+            <Input
+              width="80%"
+              onChange={(e) => handleSearch(e.target.value)}
+              id="searchInput"
+              size="sm"
+              placeholder="Pesquisar por nome ou usuário"
+              bg="white"
+              color="black"
+              _placeholder={{ color: "gray.500" }}
+              borderColor="gray.300"
+            />
+          </Flex>
+        </Skeleton>
+        <Skeleton loading={loadingUsers || isDeleteLoading}>
+          <div style={{ overflowX: "auto" }}>
+            <Table.Root size="md" variant="outline" striped>
+              <Table.Header>
+                <Table.Row>
+                  <Table.ColumnHeader>Nome</Table.ColumnHeader>
+                  <Table.ColumnHeader>Usuario</Table.ColumnHeader>
+                  <Table.ColumnHeader>Perfil</Table.ColumnHeader>
+                  <Table.ColumnHeader>Situação</Table.ColumnHeader>
+                  <Table.ColumnHeader>Data de inclusão</Table.ColumnHeader>
+                  <Table.ColumnHeader textAlign="end"></Table.ColumnHeader>
+                  {userStorage?.perfil === "admin" && (
+                    <Table.ColumnHeader textAlign="end"></Table.ColumnHeader>
+                  )}
+                </Table.Row>
+              </Table.Header>
+              {!users?.data.length ? (
+                <Text mt={10} mb={10} textAlign="center" fontWeight={"bold"}>
+                  Nenhum usuário encontrado
+                </Text>
+              ) : (
+                <Table.Body>
+                  {users?.data.map((user) => (
+                    <Table.Row key={user.id}>
+                      <Table.Cell>{user.nome}</Table.Cell>
+                      <Table.Cell>{user.usuario}</Table.Cell>
+                      <Table.Cell>{user.perfil}</Table.Cell>
+                      <Table.Cell
+                        color={user.situacao === "ativo" ? "green" : "red"}
+                      >
+                        {user.situacao}
+                      </Table.Cell>
+                      <Table.Cell>{user.dt_inclusao.toString()}</Table.Cell>
+                      <Table.Cell>
+                        <Button
+                          colorPalette="blue"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => router.push(`/user/edit/${user.id}`)}
+                        >
+                          Editar
+                        </Button>
+                      </Table.Cell>
                       {userStorage?.perfil === "admin" && (
-                        <Table.ColumnHeader textAlign="end"></Table.ColumnHeader>
+                        <Table.Cell>
+                          <Modal
+                            confirmFunc={() => onDelete(user.id)}
+                            btnTitle="Excluir"
+                            cancelBtnTitle="Cancelar"
+                            confirmBtnTitle="Excluir"
+                            btnColorPalette="red"
+                            modalTitle="Tem certeza que deseja excluir?"
+                            modalDescription="Esta ação é irreversível"
+                          />
+                        </Table.Cell>
                       )}
                     </Table.Row>
-                  </Table.Header>
-                  <Table.Body>
-                    {users?.data.map((user) => (
-                      <Table.Row key={user.id}>
-                        <Table.Cell>{user.nome}</Table.Cell>
-                        <Table.Cell>{user.usuario}</Table.Cell>
-                        <Table.Cell>{user.perfil}</Table.Cell>
-                        <Table.Cell
-                          color={user.situacao === "ativo" ? "green" : "red"}
-                        >
-                          {user.situacao}
-                        </Table.Cell>
-                        <Table.Cell>{user.dt_inclusao.toString()}</Table.Cell>
-                        <Table.Cell>
-                          <Button
-                            colorPalette="blue"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => router.push(`/user/edit/${user.id}`)}
-                          >
-                            Editar
-                          </Button>
-                        </Table.Cell>
-                        {userStorage?.perfil === "admin" && (
-                          <Table.Cell>
-                            <Modal
-                              confirmFunc={() => onDelete(user.id)}
-                              btnTitle="Excluir"
-                              cancelBtnTitle="Cancelar"
-                              confirmBtnTitle="Excluir"
-                              btnColorPalette="red"
-                              modalTitle="Tem certeza que deseja excluir?"
-                              modalDescription="Esta ação é irreversível"
-                            />
-                          </Table.Cell>
-                        )}
-                      </Table.Row>
-                    ))}
-                  </Table.Body>
-                </Table.Root>
+                  ))}
+                </Table.Body>
+              )}
+            </Table.Root>
 
-                <Pagination.Root
-                  count={users?.total}
-                  pageSize={LIMIT}
-                  page={page}
-                  onPageChange={(e) => setPage(e.page)}
-                  mb={10}
-                  colorPalette={"blue"}
-                >
-                  <ButtonGroup variant="ghost" size="sm" wrap="wrap">
-                    <Pagination.PrevTrigger asChild>
-                      <IconButton>
-                        <LuChevronLeft />
-                      </IconButton>
-                    </Pagination.PrevTrigger>
+            <Pagination.Root
+              count={users?.total}
+              pageSize={LIMIT}
+              page={page}
+              onPageChange={(e) => setPage(e.page)}
+              mb={10}
+              colorPalette={"blue"}
+            >
+              <ButtonGroup variant="ghost" size="sm" wrap="wrap">
+                <Pagination.PrevTrigger asChild>
+                  <IconButton>
+                    <LuChevronLeft />
+                  </IconButton>
+                </Pagination.PrevTrigger>
 
-                    <Pagination.Items
-                      render={(page) => (
-                        <IconButton
-                          variant={{ base: "ghost", _selected: "outline" }}
-                        >
-                          {page.value}
-                        </IconButton>
-                      )}
-                    />
+                <Pagination.Items
+                  render={(page) => (
+                    <IconButton
+                      variant={{ base: "ghost", _selected: "outline" }}
+                    >
+                      {page.value}
+                    </IconButton>
+                  )}
+                />
 
-                    <Pagination.NextTrigger asChild>
-                      <IconButton>
-                        <LuChevronRight />
-                      </IconButton>
-                    </Pagination.NextTrigger>
-                  </ButtonGroup>
-                </Pagination.Root>
-              </div>
-            </Skeleton>
-          </>
-        )}
+                <Pagination.NextTrigger asChild>
+                  <IconButton>
+                    <LuChevronRight />
+                  </IconButton>
+                </Pagination.NextTrigger>
+              </ButtonGroup>
+            </Pagination.Root>
+          </div>
+        </Skeleton>
       </Stack>
       <Footer />
     </Flex>
