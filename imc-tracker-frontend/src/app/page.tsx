@@ -56,10 +56,6 @@ export default function Login() {
                   type="password"
                   {...register("senha", {
                     required: "Este campo é obrigatório",
-                    minLength: {
-                      value: 6,
-                      message: "Minimum length should be 6",
-                    },
                   })}
                 />
                 <Field.ErrorText>
