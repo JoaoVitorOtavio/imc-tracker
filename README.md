@@ -80,7 +80,7 @@ npm run dev</code></pre>
 <h2>🎉 5. Prontinho!</h2>
 
 <p>Agora que tudo está configurado e rodando, você já pode acessar o sistema!<br>
-Use as credenciais padrão abaixo para fazer o login:</p>
+Se você rodou a seed com sucesso, use as credenciais abaixo para fazer o login:</p>
 
 <ul>
   <li><strong>Usuário:</strong> <code>admin@admin.com</code></li>
