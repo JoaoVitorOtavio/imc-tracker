@@ -118,8 +118,8 @@ export default function BmiEvaluation({
                         {...register("id_usuario_avaliacao", {
                           required:
                             userStorage?.perfil !== Perfil.ADMIN
-                              ? "Campo obrigatório"
-                              : false,
+                              ? false
+                              : "Campo obrigatório",
                           validate: (value) =>
                             value !== "default" ||
                             "Selecione um professor válido",
