@@ -14,7 +14,7 @@ export default function Login() {
   const router = useRouter();
 
   function onLoginSuccess() {
-    router.replace("/user/list");
+    router.replace("/bmi-evaluation/list");
   }
   const { mutate: login, isPending } = useLogin(onLoginSuccess);
 
