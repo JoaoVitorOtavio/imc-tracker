@@ -238,7 +238,9 @@ export default function ListBmiEvaluation() {
                     <Table.Cell>{bmiEvaluation.imc}</Table.Cell>
                     <Table.Cell>{bmiEvaluation.classificacao}</Table.Cell>
                     <Table.Cell>
-                      {bmiEvaluation.dt_inclusao.toString()}
+                      {new Date(bmiEvaluation.dt_inclusao).toLocaleDateString(
+                        "pt-BR"
+                      )}
                     </Table.Cell>
                     {!isAluno && (
                       <Table.Cell>
