@@ -46,9 +46,6 @@ export default function ListBmiEvaluation() {
   const isProfessor = userStorage?.perfil === Perfil.PROFESSOR;
   const isAdmin = userStorage?.perfil === Perfil.ADMIN;
 
-  const idUsuarioAluno = isAluno ? userStorage.id : studentId;
-  const idUsuarioAvaliacao = isProfessor ? userStorage.id : teacherId;
-
   const {
     data: bmiEvaluations,
     isLoading: loadingBmiEvaluations,
@@ -56,8 +53,8 @@ export default function ListBmiEvaluation() {
   } = useGetBmiEvaluations({
     page,
     limit: LIMIT,
-    id_usuario_aluno: idUsuarioAluno,
-    id_usuario_avaliacao: idUsuarioAvaliacao,
+    id_usuario_aluno: isAluno ? userStorage.id : studentId,
+    id_usuario_avaliacao: isProfessor ? userStorage.id : teacherId,
   });
 
   const { data: teachers, isLoading: loadingTeachers } = useGetUsers({
