@@ -164,6 +164,11 @@ export default function UserList() {
                       {userStorage?.perfil === "admin" && (
                         <Table.Cell>
                           <Modal
+                            isDisabled={
+                              (user?.avaliacoesFeitas?.length ?? 0) > 0 ||
+                              (user?.avaliacoesRecebidas?.length ?? 0) > 0
+                            }
+                            disabledMessage="Usuário possui avaliação cadastrada"
                             confirmFunc={() => onDelete(user.id)}
                             btnTitle="Excluir"
                             cancelBtnTitle="Cancelar"

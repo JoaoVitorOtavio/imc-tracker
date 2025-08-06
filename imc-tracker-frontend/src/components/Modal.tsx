@@ -14,6 +14,8 @@ export default function Modal({
   confirmBtnTitle,
   confirmFunc,
   btnColorPalette,
+  isDisabled,
+  disabledMessage,
 }: {
   btnTitle: string;
   modalTitle?: string;
@@ -22,6 +24,8 @@ export default function Modal({
   confirmBtnTitle?: string;
   confirmFunc?: () => void;
   btnColorPalette?: string;
+  isDisabled?: boolean;
+  disabledMessage?: string;
 }) {
   const dialog = useDialog();
 
@@ -38,6 +42,8 @@ export default function Modal({
       <Dialog.RootProvider value={dialog}>
         <Dialog.Trigger asChild>
           <Button
+            title={isDisabled ? disabledMessage || "" : ""}
+            disabled={isDisabled}
             variant="outline"
             size="sm"
             colorPalette={btnColorPalette || ""}
