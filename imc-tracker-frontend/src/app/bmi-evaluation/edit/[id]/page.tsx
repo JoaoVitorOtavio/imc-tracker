@@ -17,6 +17,8 @@ export default function EditBmiEvaluation() {
   const params = useParams();
   const userStorage = useUserStorage();
 
+  const isProfessor = userStorage?.perfil === Perfil.PROFESSOR;
+
   useProtectedRoute(["admin", "professor"]);
 
   const bmiEvaluation = params.id;
@@ -46,7 +48,7 @@ export default function EditBmiEvaluation() {
     setVerificationLoading(true);
 
     if (
-      userStorage?.perfil === Perfil.PROFESSOR &&
+      isProfessor &&
       bmiEvaluationData?.id_usuario_avaliacao !== userStorage?.id
     ) {
       router.push("/401");
@@ -56,9 +58,9 @@ export default function EditBmiEvaluation() {
   }, [
     bmiEvaluationData,
     bmiEvaluationData?.id_usuario_avaliacao,
+    isProfessor,
     router,
-    userStorage?.id,
-    userStorage?.perfil,
+    userStorage,
   ]);
 
   if (isLoading || verificationLoading) {

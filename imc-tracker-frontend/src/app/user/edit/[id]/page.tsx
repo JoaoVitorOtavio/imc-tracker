@@ -1,17 +1,24 @@
 "use client";
 
+import { Perfil } from "@/common/enums/perfil.enum";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header/Header";
 import UserForm from "@/components/UserForm";
 import { useGetUser } from "@/hooks/user/useGetUser";
+import { useUserStorage } from "@/hooks/useUserStorage";
 import { Box, Center, Flex, Spinner, VStack, Text } from "@chakra-ui/react";
 import axios from "axios";
-import { useParams, notFound } from "next/navigation";
+import { useParams, notFound, useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export default function EditUser() {
+  const router = useRouter();
   const params = useParams();
   const userId = params.id;
+
+  const userStorage = useUserStorage();
+
+  const isProfessor = userStorage?.perfil === Perfil.PROFESSOR;
 
   const {
     data: user,
@@ -29,6 +36,14 @@ export default function EditUser() {
       }
     }
   }, [error, userId]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    if (isProfessor && user?.perfil !== Perfil.ALUNO) {
+      router.push("/401");
+    }
+  }, [isProfessor, router, user, user?.perfil]);
 
   if (isLoading) {
     return (
