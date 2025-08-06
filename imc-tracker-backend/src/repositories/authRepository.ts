@@ -4,21 +4,29 @@ import { AppDataSource } from "../database/data-source";
 import { User } from "../models/userModel";
 import { HttpError } from "../common/HttpError";
 import userTokenRepository from "./userTokenRepository";
-import { UserToken } from "src/models/userTokenModel";
+import { UserToken } from "../models/userTokenModel";
 import {
   ACCESS_TOKEN_EXPIRES_IN,
   REFRESH_TOKEN_EXPIRES_IN,
 } from "../common/constants";
 import { SignOptions } from "jsonwebtoken";
-import { LoginResponse } from "src/common/interfaces/auth";
+import { Situacao } from "../common/enums/situacao.enum";
+import { LoginResponse } from "../common/interfaces/auth.interface";
 
-async function login(user: string, password: string): Promise<LoginResponse> {
+async function login(
+  userName: string,
+  password: string
+): Promise<LoginResponse> {
   const userRepository = AppDataSource.getRepository(User);
 
-  const userOnDb = await userRepository.findOneBy({ usuario: user });
+  const userOnDb = await userRepository.findOneBy({ usuario: userName });
 
   if (!userOnDb) {
     throw new HttpError("Usuário não encontrado", 404);
+  }
+
+  if (userOnDb.situacao === Situacao.INATIVO) {
+    throw new HttpError("Usuário inativo", 401);
   }
 
   const senhaCorreta = await bcrypt.compare(password, userOnDb.senha);
