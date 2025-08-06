@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import userTokenRepository from "../repositories/userTokenRepository";
+import userTokenService from "../services/userTokenService";
 import { HttpError } from "../common/HttpError";
 import { UserToken } from "../models/userTokenModel";
 
@@ -7,7 +7,7 @@ async function getUserToken(req: Request, res: Response, next: NextFunction) {
   try {
     const id = req.params.id;
 
-    const userToken = await userTokenRepository.getUserToken(id);
+    const userToken = await userTokenService.getUserToken(id);
 
     if (!userToken) {
       throw new HttpError("Token de usuário não encontrado", 404);
@@ -27,7 +27,7 @@ async function getUsersTokens(
   next: NextFunction
 ) {
   try {
-    const userTokens = await userTokenRepository.getUsersTokens();
+    const userTokens = await userTokenService.getUsersTokens();
 
     return res.status(200).json(userTokens);
   } catch (error) {
@@ -45,7 +45,7 @@ async function createUserToken(
   try {
     const userToken = req.body as UserToken;
 
-    const result = await userTokenRepository.createUserToken(userToken);
+    const result = await userTokenService.createUserToken(userToken);
 
     return res.status(201).json(result);
   } catch (error) {
@@ -64,7 +64,7 @@ async function updateUserToken(
     const userId = req.params.id;
     const body: Partial<UserToken> = req.body;
 
-    await userTokenRepository.updateUserToken({
+    await userTokenService.updateUserToken({
       id: userId,
       ...body,
     });
@@ -85,7 +85,7 @@ async function deleteUserToken(
   try {
     const userId = req.params.id;
 
-    await userTokenRepository.deleteUserToken(userId);
+    await userTokenService.deleteUserToken(userId);
 
     return res.sendStatus(204);
   } catch (error) {

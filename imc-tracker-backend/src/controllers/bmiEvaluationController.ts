@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { HttpError } from "../common/HttpError";
-import BmiEvaluationRepository from "../repositories/bmiEvaluationRepository";
+import BmiEvaluationService from "../services/bmiEvaluationService";
 import { BmiEvaluation } from "../models/bmiEvaluationModel";
 import { calculateBmi } from "../common/utils/calculateBmi";
 
@@ -11,7 +11,7 @@ async function getBmiEvaluation(
 ) {
   try {
     const id = req.params.id;
-    const bmiEvaluation = await BmiEvaluationRepository.getBmiEvaluation(id);
+    const bmiEvaluation = await BmiEvaluationService.getBmiEvaluation(id);
 
     if (!bmiEvaluation) {
       throw new HttpError("Avaliação IMC nao encontrada", 404);
@@ -36,7 +36,7 @@ async function getBmiEvaluations(
     const pageNumber = page ? parseInt(page as string, 10) : undefined;
     const limitNumber = limit ? parseInt(limit as string, 10) : undefined;
 
-    const result = await BmiEvaluationRepository.getBmiEvaluations({
+    const result = await BmiEvaluationService.getBmiEvaluations({
       page: pageNumber,
       limit: limitNumber,
       id_usuario_aluno: id_usuario_aluno as string,
@@ -63,7 +63,7 @@ async function createBmiEvaluation(
 
     const classification = calculateBmi(bmi);
 
-    const result = await BmiEvaluationRepository.createBmiEvaluation({
+    const result = await BmiEvaluationService.createBmiEvaluation({
       ...bmiEvaluation,
       imc: Number(bmi.toFixed(2)),
       classificacao: classification,
@@ -86,7 +86,7 @@ async function updateBmiEvaluation(
     const id = req.params.id;
     const body: Partial<BmiEvaluation> = req.body;
 
-    const bmiEvaluation = await BmiEvaluationRepository.getBmiEvaluation(id);
+    const bmiEvaluation = await BmiEvaluationService.getBmiEvaluation(id);
 
     if (!bmiEvaluation) {
       throw new HttpError("Avaliação IMC nao encontrada", 404);
@@ -105,7 +105,7 @@ async function updateBmiEvaluation(
       classificacao: classification,
     };
 
-    await BmiEvaluationRepository.updateBmiEvaluation({
+    await BmiEvaluationService.updateBmiEvaluation({
       ...newBmiEvaluationBody,
       id: id,
     });
@@ -126,7 +126,7 @@ async function deleteBmiEvaluation(
   try {
     const id = req.params.id;
 
-    await BmiEvaluationRepository.deleteBmiEvaluation(id);
+    await BmiEvaluationService.deleteBmiEvaluation(id);
 
     return res.sendStatus(204);
   } catch (error) {

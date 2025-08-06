@@ -1,12 +1,12 @@
 import { Request, Response, NextFunction } from "express";
-import authRepository from "../repositories/authRepository";
+import authService from "../services/authService";
 import { ACCESS_TOKEN } from "../common/constants";
 
 async function login(req: Request, res: Response, next: NextFunction) {
   try {
     const { usuario, senha } = req.body;
 
-    const result = await authRepository.login(usuario, senha);
+    const result = await authService.login(usuario, senha);
 
     res.cookie(ACCESS_TOKEN, result.accessToken, {
       httpOnly: true,
@@ -33,7 +33,7 @@ async function refreshAccessToken(
   try {
     const accessToken: string = req.cookies.accessToken;
 
-    const result = await authRepository.refreshAccessToken(accessToken);
+    const result = await authService.refreshAccessToken(accessToken);
 
     res.cookie(ACCESS_TOKEN, result.accessToken, {
       httpOnly: true,

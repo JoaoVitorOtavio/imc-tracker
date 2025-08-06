@@ -3,7 +3,7 @@ import { decodeToken, generateToken, isTokenValid } from "../common/utils/jwt";
 import { AppDataSource } from "../database/data-source";
 import { User } from "../models/userModel";
 import { HttpError } from "../common/HttpError";
-import userTokenRepository from "./userTokenRepository";
+import userTokenRepository from "./userTokenService";
 import { UserToken } from "../models/userTokenModel";
 import {
   ACCESS_TOKEN_EXPIRES_IN,
