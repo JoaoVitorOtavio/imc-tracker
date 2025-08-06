@@ -9,7 +9,7 @@ export const login = async (payload: LoginPayload): Promise<LoginResponse> => {
     withCredentials: true,
   });
 
-  localStorage.setItem("isAuthenticated", "true");
+  localStorage.setItem("user", JSON.stringify(response.data.user));
 
   return response.data;
 };
