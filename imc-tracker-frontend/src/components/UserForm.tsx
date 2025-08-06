@@ -19,6 +19,8 @@ import { User } from "@/common/interfaces/user/user.interface";
 import { EditUser } from "@/common/interfaces/user/edit-user.intercace";
 import { useEditUser } from "@/hooks/user/useEditUser";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useUserStorage } from "@/hooks/useUserStorage";
 
 export default function UserForm({
   isEdit,
@@ -28,6 +30,10 @@ export default function UserForm({
   user?: User;
 }) {
   const router = useRouter();
+
+  const userStorage = useUserStorage();
+
+  const isProfessor = userStorage?.perfil === Perfil.PROFESSOR;
 
   function onCreateAndEditSuccess() {
     router.replace("/user/list");
@@ -44,6 +50,7 @@ export default function UserForm({
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<EditUser | CreateUser>({
     defaultValues: {
       nome: user?.nome || "",
@@ -52,6 +59,22 @@ export default function UserForm({
       situacao: user?.situacao || Situacao.ATIVO,
     },
   });
+
+  useEffect(() => {
+    if (!userStorage) return;
+
+    const handleRole = () => {
+      if (userStorage?.perfil === Perfil.PROFESSOR) {
+        return Perfil.ALUNO;
+      }
+
+      return user?.perfil || Perfil.ADMIN;
+    };
+
+    reset({
+      perfil: handleRole(),
+    });
+  }, [userStorage, reset, user?.perfil]);
 
   return (
     <Flex align={"center"} justify={"center"} py={10}>
@@ -65,7 +88,8 @@ export default function UserForm({
         >
           <Card.Header alignItems={"center"}>
             <Card.Title fontSize={"2xl"} fontWeight={600}>
-              {isEdit ? "Edição" : "Cadastro"} de usuário
+              {isEdit ? "Edição" : "Cadastro"} de{" "}
+              {isProfessor ? "aluno" : "usuário"}
             </Card.Title>
           </Card.Header>
           <Card.Body>
@@ -118,21 +142,23 @@ export default function UserForm({
                   {errors.senha && errors.senha.message}
                 </Field.ErrorText>
               </Field.Root>
-              <Field.Root>
-                <Field.Label>Perfil</Field.Label>
-                <NativeSelect.Root>
-                  <NativeSelect.Field
-                    {...register("perfil", { required: "Campo obrigatório" })}
-                  >
-                    {Object.entries(Perfil).map(([key, value]) => (
-                      <option key={key} value={value}>
-                        {value}
-                      </option>
-                    ))}
-                  </NativeSelect.Field>
-                  <NativeSelect.Indicator />
-                </NativeSelect.Root>
-              </Field.Root>
+              {!isProfessor && (
+                <Field.Root>
+                  <Field.Label>Perfil</Field.Label>
+                  <NativeSelect.Root>
+                    <NativeSelect.Field
+                      {...register("perfil", { required: "Campo obrigatório" })}
+                    >
+                      {Object.entries(Perfil).map(([key, value]) => (
+                        <option key={key} value={value}>
+                          {value}
+                        </option>
+                      ))}
+                    </NativeSelect.Field>
+                    <NativeSelect.Indicator />
+                  </NativeSelect.Root>
+                </Field.Root>
+              )}
               <Field.Root>
                 <Field.Label>Situação</Field.Label>
                 <NativeSelect.Root>
