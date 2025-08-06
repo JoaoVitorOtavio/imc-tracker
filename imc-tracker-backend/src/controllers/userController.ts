@@ -3,6 +3,7 @@ import userRepository from "../repositories/userRepository";
 import { User } from "../models/userModel";
 import { HttpError } from "../common/HttpError";
 import { Perfil } from "src/common/enums/perfil.enum";
+import { Situacao } from "src/common/enums/situacao.enum";
 
 async function getUser(req: Request, res: Response, next: NextFunction) {
   try {
@@ -24,7 +25,7 @@ async function getUser(req: Request, res: Response, next: NextFunction) {
 
 async function getUsers(req: Request, res: Response, next: NextFunction) {
   try {
-    const { page, limit, role, nameOrUsername } = req.query;
+    const { page, limit, role, nameOrUsername, situation } = req.query;
 
     const pageNumber = page ? parseInt(page as string, 10) : undefined;
     const limitNumber = limit ? parseInt(limit as string, 10) : undefined;
@@ -34,6 +35,7 @@ async function getUsers(req: Request, res: Response, next: NextFunction) {
       limit: limitNumber,
       role: role as Perfil,
       nameOrUsername: nameOrUsername as string,
+      situation: situation as Situacao,
     });
 
     return res.status(200).json(result);

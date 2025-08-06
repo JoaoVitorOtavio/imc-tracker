@@ -22,6 +22,7 @@ async function getUsers({
   limit,
   role,
   nameOrUsername,
+  situation,
 }: GetUsersOptions): Promise<GetUsersResponse> {
   const userRepository = AppDataSource.getRepository(User);
 
@@ -30,6 +31,10 @@ async function getUsers({
   if (nameOrUsername) {
     where.push({ nome: Like(`%${nameOrUsername}%`) });
     where.push({ usuario: Like(`%${nameOrUsername}%`) });
+  }
+
+  if (situation) {
+    where.push({ situacao: situation });
   }
 
   if (role) {
