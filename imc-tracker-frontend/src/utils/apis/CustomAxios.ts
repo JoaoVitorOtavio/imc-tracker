@@ -1,4 +1,5 @@
 import { BASE_URL } from "@/common/constants";
+import { toaster } from "@/components/ui/toaster";
 import { refreshAccessToken } from "@/services/auth/refreshAccessToken";
 import axios from "axios";
 
@@ -22,7 +23,17 @@ customAxios.interceptors.response.use(
       } catch (refreshError) {
         console.error("Token refresh failed:", refreshError);
 
+        localStorage.removeItem("isAuthenticated");
+        localStorage.removeItem("user");
+
         window.location.href = "/";
+
+        toaster.error({
+          title: `Login expirado, por favor faça login novamente!`,
+          type: "error",
+          duration: 3000,
+          closable: true,
+        });
       }
     }
     return Promise.reject(error);
