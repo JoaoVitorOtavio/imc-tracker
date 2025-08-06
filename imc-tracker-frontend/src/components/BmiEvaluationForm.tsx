@@ -20,6 +20,8 @@ import { BmiEvaluation as IBmiEvaluation } from "@/common/interfaces/bmi-evaluat
 import { useEditBmiEvaluation } from "@/hooks/bmiEvaluation/useEditBmiEvaluation";
 import { EditBmiEvaluation } from "@/common/interfaces/bmi-evaluation/edit-bmi-evaluation.interface";
 import { useRouter } from "next/navigation";
+import { useUserStorage } from "@/hooks/useUserStorage";
+import { useEffect } from "react";
 
 export default function BmiEvaluation({
   isEdit,
@@ -30,29 +32,13 @@ export default function BmiEvaluation({
 }) {
   const router = useRouter();
 
-  function onEditSuccess() {
-    router.replace("/bmi-evaluation/list");
-  }
+  const userStorage = useUserStorage();
 
   const { mutate: createBmiEvaluation, isPending: isCreateLoading } =
-    useCreateBmiEvaluation();
+    useCreateBmiEvaluation(onCreateOrEditSuccess);
 
   const { mutate: editBmiEvaluation, isPending: isEditLoading } =
-    useEditBmiEvaluation(onEditSuccess);
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    watch,
-  } = useForm<CreateBmiEvaluation | EditBmiEvaluation>({
-    defaultValues: {
-      id_usuario_avaliacao: bmiEvaluation?.id_usuario_avaliacao || "",
-      id_usuario_aluno: bmiEvaluation?.id_usuario_aluno || "",
-      peso: bmiEvaluation?.peso || 0,
-      altura: bmiEvaluation?.altura || 0,
-    },
-  });
+    useEditBmiEvaluation(onCreateOrEditSuccess);
 
   const { data: teachers, isLoading: loadingTeachers } = useGetUsers({
     role: Perfil.PROFESSOR,
@@ -62,8 +48,46 @@ export default function BmiEvaluation({
     role: Perfil.ALUNO,
   });
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+    reset,
+  } = useForm<CreateBmiEvaluation | EditBmiEvaluation>({
+    defaultValues: {
+      id_usuario_avaliacao: bmiEvaluation?.id_usuario_avaliacao || "",
+      id_usuario_aluno: bmiEvaluation?.id_usuario_aluno || "",
+      peso: bmiEvaluation?.peso || 0,
+      altura: bmiEvaluation?.altura || 0,
+    },
+  });
+
+  useEffect(() => {
+    if (!userStorage) return;
+
+    const handleIdUsuarioAvaliacao = () => {
+      if (userStorage?.perfil === Perfil.PROFESSOR) {
+        return userStorage.id;
+      }
+
+      return bmiEvaluation?.id_usuario_avaliacao || "";
+    };
+
+    reset({
+      id_usuario_avaliacao: handleIdUsuarioAvaliacao(),
+      id_usuario_aluno: bmiEvaluation?.id_usuario_aluno || "",
+      peso: bmiEvaluation?.peso || 0,
+      altura: bmiEvaluation?.altura || 0,
+    });
+  }, [userStorage, bmiEvaluation, reset]);
+
   const selectedTeacher = watch("id_usuario_avaliacao");
   const selectedStudent = watch("id_usuario_aluno");
+
+  function onCreateOrEditSuccess() {
+    router.replace("/bmi-evaluation/list");
+  }
 
   return (
     <Flex align={"center"} justify={"center"} py={10}>
@@ -86,42 +110,47 @@ export default function BmiEvaluation({
             </Card.Header>
             <Card.Body>
               <Stack gap="4" w="full">
-                <Field.Root>
-                  <Field.Label>Professor</Field.Label>
-                  <NativeSelect.Root>
-                    <NativeSelect.Field
-                      {...register("id_usuario_avaliacao", {
-                        required: "Campo obrigatório",
-                        validate: (value) =>
-                          value !== "default" ||
-                          "Selecione um professor válido",
-                      })}
-                    >
-                      {selectedTeacher !== "default" &&
-                      selectedTeacher ? null : (
-                        <option key="default" value="default">
-                          Selecione um professor...
-                        </option>
-                      )}
-                      {teachers?.data.map((professor) => (
-                        <option key={professor.id} value={professor.id}>
-                          {professor.nome}
-                        </option>
-                      ))}
-                    </NativeSelect.Field>
-                    <NativeSelect.Indicator />
-                  </NativeSelect.Root>
-                  {errors.id_usuario_avaliacao && (
-                    <Text
-                      color="red.500"
-                      fontWeight={600}
-                      fontSize="small"
-                      mt="1"
-                    >
-                      {errors.id_usuario_avaliacao.message}
-                    </Text>
-                  )}
-                </Field.Root>
+                {userStorage?.perfil === Perfil.ADMIN && (
+                  <Field.Root>
+                    <Field.Label>Professor</Field.Label>
+                    <NativeSelect.Root>
+                      <NativeSelect.Field
+                        {...register("id_usuario_avaliacao", {
+                          required:
+                            userStorage?.perfil !== Perfil.ADMIN
+                              ? "Campo obrigatório"
+                              : false,
+                          validate: (value) =>
+                            value !== "default" ||
+                            "Selecione um professor válido",
+                        })}
+                      >
+                        {selectedTeacher !== "default" &&
+                        selectedTeacher ? null : (
+                          <option key="default" value="default">
+                            Selecione um professor...
+                          </option>
+                        )}
+                        {teachers?.data.map((professor) => (
+                          <option key={professor.id} value={professor.id}>
+                            {professor.nome}
+                          </option>
+                        ))}
+                      </NativeSelect.Field>
+                      <NativeSelect.Indicator />
+                    </NativeSelect.Root>
+                    {errors.id_usuario_avaliacao && (
+                      <Text
+                        color="red.500"
+                        fontWeight={600}
+                        fontSize="small"
+                        mt="1"
+                      >
+                        {errors.id_usuario_avaliacao.message}
+                      </Text>
+                    )}
+                  </Field.Root>
+                )}
                 <Field.Root>
                   <Field.Label>Aluno</Field.Label>
                   <NativeSelect.Root>

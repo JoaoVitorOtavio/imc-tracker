@@ -3,7 +3,7 @@ export interface LoginPayload {
   senha: string;
 }
 
-interface UserOnLogin {
+export interface UserOnLogin {
   id: string;
   nome: string;
   usuario: string;

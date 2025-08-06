@@ -1,17 +1,28 @@
 "use client";
 
+import { Perfil } from "@/common/enums/perfil.enum";
 import BmiEvaluation from "@/components/BmiEvaluationForm";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header/Header";
 import { useGetBmiEvaluation } from "@/hooks/bmiEvaluation/useGetBmiEvaluation";
+import { useProtectedRoute } from "@/hooks/useProtectedRoute";
+import { useUserStorage } from "@/hooks/useUserStorage";
 import { Box, Center, Spinner, VStack, Text, Flex } from "@chakra-ui/react";
 import axios from "axios";
-import { notFound, useParams } from "next/navigation";
-import { useEffect } from "react";
+import { notFound, useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function EditBmiEvaluation() {
+  const router = useRouter();
   const params = useParams();
+  const userStorage = useUserStorage();
+
+  useProtectedRoute(["admin", "professor"]);
+
   const bmiEvaluation = params.id;
+
+  const [verificationLoading, setVerificationLoading] =
+    useState<boolean>(false);
 
   const {
     data: bmiEvaluationData,
@@ -27,9 +38,30 @@ export default function EditBmiEvaluation() {
         notFound();
       }
     }
-  }, [bmiEvaluationData, error]);
+  }, [error]);
 
-  if (isLoading) {
+  useEffect(() => {
+    if (!bmiEvaluationData) return;
+
+    setVerificationLoading(true);
+
+    if (
+      userStorage?.perfil === Perfil.PROFESSOR &&
+      bmiEvaluationData?.id_usuario_avaliacao !== userStorage?.id
+    ) {
+      router.push("/401");
+    }
+
+    setVerificationLoading(false);
+  }, [
+    bmiEvaluationData,
+    bmiEvaluationData?.id_usuario_avaliacao,
+    router,
+    userStorage?.id,
+    userStorage?.perfil,
+  ]);
+
+  if (isLoading || verificationLoading) {
     return (
       <Box
         position="fixed"

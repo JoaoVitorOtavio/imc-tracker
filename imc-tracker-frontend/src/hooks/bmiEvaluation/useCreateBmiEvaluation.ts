@@ -1,10 +1,12 @@
 import { ErrorResponse } from "@/common/interfaces/error-response.interface";
 import { toaster } from "@/components/ui/toaster";
 import { createBmiEvaluation } from "@/services/bmiEvaluation/createBmiEvaluation";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 
-export function useCreateBmiEvaluation() {
+export function useCreateBmiEvaluation(onSuccess?: () => void) {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: createBmiEvaluation,
     onSuccess: () => {
@@ -14,6 +16,12 @@ export function useCreateBmiEvaluation() {
         duration: 3000,
         closable: true,
       });
+
+      queryClient.invalidateQueries({ queryKey: ["bmiEvaluations"] });
+
+      if (onSuccess) {
+        onSuccess();
+      }
     },
     onError: (error: AxiosError<ErrorResponse>) => {
       const errorMessage =

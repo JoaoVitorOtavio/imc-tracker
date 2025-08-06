@@ -1,21 +1,27 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toaster } from "@/components/ui/toaster";
 import { AxiosError } from "axios";
 import { createUser } from "@/services/user/createUser";
 import { ErrorResponse } from "@/common/interfaces/error-response.interface";
 
-export function useCreateUser() {
+export function useCreateUser(onSuccess?: () => void) {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: createUser,
-    onSuccess: (data) => {
+    onSuccess: () => {
       toaster.create({
         title: `Usuário criado com sucesso!`,
         type: "success",
         duration: 3000,
         closable: true,
       });
-      console.log("DDATA CREATE USER", data);
-      // TODO: salvar em um global state
+
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+
+      if (onSuccess) {
+        onSuccess();
+      }
     },
     onError: (error: AxiosError<ErrorResponse>) => {
       const errorMessage =

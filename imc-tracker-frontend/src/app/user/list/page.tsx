@@ -26,14 +26,19 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { LuChevronLeft, LuChevronRight } from "react-icons/lu";
 import { FaCirclePlus } from "react-icons/fa6";
+import { useUserStorage } from "@/hooks/useUserStorage";
+import { useProtectedRoute } from "@/hooks/useProtectedRoute";
 
 export default function UserList() {
   const router = useRouter();
+  useProtectedRoute(["admin", "professor"]);
 
   const LIMIT = 15;
 
   const [page, setPage] = useState<number>(1);
   const [search, setSearch] = useState<string>("");
+
+  const userStorage = useUserStorage();
 
   const { data: users, isLoading: loadingUsers } = useGetUsers({
     page,
@@ -123,8 +128,10 @@ export default function UserList() {
                       <Table.ColumnHeader>Perfil</Table.ColumnHeader>
                       <Table.ColumnHeader>Situação</Table.ColumnHeader>
                       <Table.ColumnHeader>Data de inclusão</Table.ColumnHeader>
-                      <Table.ColumnHeader textAlign="center"></Table.ColumnHeader>
-                      <Table.ColumnHeader></Table.ColumnHeader>
+                      <Table.ColumnHeader textAlign="end"></Table.ColumnHeader>
+                      {userStorage?.perfil === "admin" && (
+                        <Table.ColumnHeader textAlign="end"></Table.ColumnHeader>
+                      )}
                     </Table.Row>
                   </Table.Header>
                   <Table.Body>
@@ -149,17 +156,19 @@ export default function UserList() {
                             Editar
                           </Button>
                         </Table.Cell>
-                        <Table.Cell>
-                          <Modal
-                            confirmFunc={() => onDelete(user.id)}
-                            btnTitle="Excluir"
-                            cancelBtnTitle="Cancelar"
-                            confirmBtnTitle="Excluir"
-                            btnColorPalette="red"
-                            modalTitle="Tem certeza que deseja excluir?"
-                            modalDescription="Esta ação é irreversível"
-                          />
-                        </Table.Cell>
+                        {userStorage?.perfil === "admin" && (
+                          <Table.Cell>
+                            <Modal
+                              confirmFunc={() => onDelete(user.id)}
+                              btnTitle="Excluir"
+                              cancelBtnTitle="Cancelar"
+                              confirmBtnTitle="Excluir"
+                              btnColorPalette="red"
+                              modalTitle="Tem certeza que deseja excluir?"
+                              modalDescription="Esta ação é irreversível"
+                            />
+                          </Table.Cell>
+                        )}
                       </Table.Row>
                     ))}
                   </Table.Body>

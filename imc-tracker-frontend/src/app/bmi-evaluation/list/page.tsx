@@ -7,6 +7,7 @@ import Modal from "@/components/Modal";
 import { useDeleteBmiEvaluation } from "@/hooks/bmiEvaluation/useDeleteBmiEvaluation";
 import { useGetBmiEvaluations } from "@/hooks/bmiEvaluation/useGetBmiEvaluations";
 import { useGetUsers } from "@/hooks/user/useGetUsers";
+import { useUserStorage } from "@/hooks/useUserStorage";
 import {
   Box,
   Button,
@@ -33,12 +34,20 @@ import { LuChevronLeft, LuChevronRight } from "react-icons/lu";
 
 export default function ListBmiEvaluation() {
   const router = useRouter();
+  const userStorage = useUserStorage();
 
   const LIMIT = 15;
 
   const [page, setPage] = useState<number>(1);
   const [teacherId, setTeacherId] = useState<string>("");
   const [studentId, setStudentId] = useState<string>("");
+
+  const isAluno = userStorage?.perfil === Perfil.ALUNO;
+  const isProfessor = userStorage?.perfil === Perfil.PROFESSOR;
+  const isAdmin = userStorage?.perfil === Perfil.ADMIN;
+
+  const idUsuarioAluno = isAluno ? userStorage.id : studentId;
+  const idUsuarioAvaliacao = isProfessor ? userStorage.id : teacherId;
 
   const {
     data: bmiEvaluations,
@@ -47,8 +56,8 @@ export default function ListBmiEvaluation() {
   } = useGetBmiEvaluations({
     page,
     limit: LIMIT,
-    id_usuario_aluno: studentId,
-    id_usuario_avaliacao: teacherId,
+    id_usuario_aluno: idUsuarioAluno,
+    id_usuario_avaliacao: idUsuarioAvaliacao,
   });
 
   const { data: teachers, isLoading: loadingTeachers } = useGetUsers({
@@ -70,13 +79,13 @@ export default function ListBmiEvaluation() {
         notFound();
       }
     }
-  }, [bmiEvaluations, error]);
+  }, [error]);
 
   const onDelete = async (id: string) => {
     deleteBmiEvaluation(id);
   };
 
-  if (loadingBmiEvaluations)
+  if (loadingBmiEvaluations || loadingTeachers || loadingStudents) {
     return (
       <Box
         position="fixed"
@@ -95,6 +104,7 @@ export default function ListBmiEvaluation() {
         </Center>
       </Box>
     );
+  }
 
   return (
     <Flex minHeight={"100vh"} direction={"column"} justify={"space-between"}>
@@ -103,91 +113,100 @@ export default function ListBmiEvaluation() {
         <Heading size="xl" display={"flex"} justifyContent={"center"}>
           Listagem de avaliações de IMC
         </Heading>
-        <Flex direction="column" alignItems="center" mt={5} w="100%">
-          <Text fontWeight="bold" mb={4}>
-            Filtrar por aluno e/ou professor
-          </Text>
+        {!isAluno && (
+          <Flex direction="column" alignItems="center" mt={5} w="100%">
+            <Text fontWeight="bold" mb={4}>
+              Filtrar por aluno {isAdmin && "e/ou professor"}
+            </Text>
 
-          <Flex
-            w="100%"
-            gap={4}
-            flexWrap="wrap"
-            justify="center"
-            direction={{ base: "column", md: "row" }}
-            align="center"
-          >
-            <Skeleton loading={loadingTeachers} w={{ base: "80%", md: "30%" }}>
-              <Field.Root w="100%">
-                <Field.Label>Professor</Field.Label>
-                <NativeSelect.Root
-                  onChange={(e) =>
-                    setTeacherId((e.target as HTMLSelectElement).value)
-                  }
+            <Flex
+              w="100%"
+              gap={4}
+              flexWrap="wrap"
+              justify="center"
+              direction={{ base: "column", md: "row" }}
+              align="center"
+            >
+              {isAdmin && (
+                <Skeleton
+                  loading={loadingTeachers}
+                  w={{ base: "80%", md: "30%" }}
                 >
-                  <NativeSelect.Field
-                    bg="white"
-                    color="black"
-                    _placeholder={{ color: "gray.500" }}
-                    borderColor="gray.300"
-                    w="100%"
-                  >
-                    <option key="default" value="">
-                      Todos os professores
-                    </option>
-                    {teachers?.data.map((professor) => (
-                      <option key={professor.id} value={professor.id}>
-                        {professor.nome}
-                      </option>
-                    ))}
-                  </NativeSelect.Field>
-                  <NativeSelect.Indicator />
-                </NativeSelect.Root>
-              </Field.Root>
-            </Skeleton>
-
-            <Skeleton loading={loadingStudents} w={{ base: "80%", md: "30%" }}>
-              <Field.Root w="100%">
-                <Field.Label>Aluno</Field.Label>
-                <NativeSelect.Root
-                  onChange={(e) =>
-                    setStudentId((e.target as HTMLSelectElement).value)
-                  }
-                >
-                  <NativeSelect.Field
-                    bg="white"
-                    color="black"
-                    _placeholder={{ color: "gray.500" }}
-                    borderColor="gray.300"
-                    w="100%"
-                  >
-                    <option key="default" value="">
-                      Todos os alunos
-                    </option>
-                    {students?.data.map((aluno) => (
-                      <option key={aluno.id} value={aluno.id}>
-                        {aluno.nome}
-                      </option>
-                    ))}
-                  </NativeSelect.Field>
-                  <NativeSelect.Indicator />
-                </NativeSelect.Root>
-              </Field.Root>
-            </Skeleton>
-
-            <Flex width={"100%"} justifyContent={"center"}>
-              <Button
-                colorPalette="green"
-                variant="surface"
+                  <Field.Root w="100%">
+                    <Field.Label>Professor</Field.Label>
+                    <NativeSelect.Root
+                      onChange={(e) =>
+                        setTeacherId((e.target as HTMLSelectElement).value)
+                      }
+                    >
+                      <NativeSelect.Field
+                        bg="white"
+                        color="black"
+                        _placeholder={{ color: "gray.500" }}
+                        borderColor="gray.300"
+                        w="100%"
+                      >
+                        <option key="default" value="">
+                          Todos os professores
+                        </option>
+                        {teachers?.data.map((professor) => (
+                          <option key={professor.id} value={professor.id}>
+                            {professor.nome}
+                          </option>
+                        ))}
+                      </NativeSelect.Field>
+                      <NativeSelect.Indicator />
+                    </NativeSelect.Root>
+                  </Field.Root>
+                </Skeleton>
+              )}
+              <Skeleton
+                loading={loadingStudents}
                 w={{ base: "80%", md: "30%" }}
-                alignSelf="flex-end"
-                onClick={() => router.push("/bmi-evaluation/create")}
               >
-                <FaCirclePlus style={{ marginRight: "8px" }} />
-                Adicionar nova avaliação
-              </Button>
+                <Field.Root w="100%">
+                  <Field.Label>Aluno</Field.Label>
+                  <NativeSelect.Root
+                    onChange={(e) =>
+                      setStudentId((e.target as HTMLSelectElement).value)
+                    }
+                  >
+                    <NativeSelect.Field
+                      bg="white"
+                      color="black"
+                      _placeholder={{ color: "gray.500" }}
+                      borderColor="gray.300"
+                      w="100%"
+                    >
+                      <option key="default" value="">
+                        Todos os alunos
+                      </option>
+                      {students?.data.map((aluno) => (
+                        <option key={aluno.id} value={aluno.id}>
+                          {aluno.nome}
+                        </option>
+                      ))}
+                    </NativeSelect.Field>
+                    <NativeSelect.Indicator />
+                  </NativeSelect.Root>
+                </Field.Root>
+              </Skeleton>
+
+              <Flex width={"100%"} justifyContent={"center"}>
+                <Button
+                  colorPalette="green"
+                  variant="surface"
+                  w={{ base: "80%", md: "30%" }}
+                  alignSelf="flex-end"
+                  onClick={() => router.push("/bmi-evaluation/create")}
+                >
+                  <FaCirclePlus style={{ marginRight: "8px" }} />
+                  Adicionar nova avaliação
+                </Button>
+              </Flex>
             </Flex>
           </Flex>
-        </Flex>
+        )}
         <Skeleton loading={loadingBmiEvaluations || isDeleteLoading}>
           <div style={{ overflowX: "auto" }}>
             <Table.Root size="md" variant="outline" striped>
@@ -200,8 +219,12 @@ export default function ListBmiEvaluation() {
                   <Table.ColumnHeader>IMC</Table.ColumnHeader>
                   <Table.ColumnHeader>Classificação</Table.ColumnHeader>
                   <Table.ColumnHeader>Data da avaliação</Table.ColumnHeader>
-                  <Table.ColumnHeader textAlign="center"></Table.ColumnHeader>
-                  <Table.ColumnHeader></Table.ColumnHeader>
+                  {!isAluno && (
+                    <Table.ColumnHeader textAlign="end"></Table.ColumnHeader>
+                  )}
+                  {userStorage?.perfil === "admin" && (
+                    <Table.ColumnHeader textAlign="end"></Table.ColumnHeader>
+                  )}
                 </Table.Row>
               </Table.Header>
               <Table.Body>
@@ -220,36 +243,44 @@ export default function ListBmiEvaluation() {
                     <Table.Cell>
                       {bmiEvaluation.dt_inclusao.toString()}
                     </Table.Cell>
-                    <Table.Cell>
-                      <Button
-                        colorPalette="blue"
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          router.push(
-                            `/bmi-evaluation/edit/${bmiEvaluation.id}`
-                          )
-                        }
-                      >
-                        Editar
-                      </Button>
-                    </Table.Cell>
-                    <Table.Cell>
-                      <Modal
-                        confirmFunc={() => onDelete(bmiEvaluation.id)}
-                        btnTitle="Excluir"
-                        cancelBtnTitle="Cancelar"
-                        confirmBtnTitle="Excluir"
-                        btnColorPalette="red"
-                        modalTitle="Tem certeza que deseja excluir?"
-                        modalDescription="Esta ação é irreversível"
-                      />
-                    </Table.Cell>
+                    {!isAluno && (
+                      <Table.Cell>
+                        <Button
+                          colorPalette="blue"
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            router.push(
+                              `/bmi-evaluation/edit/${bmiEvaluation.id}`
+                            )
+                          }
+                        >
+                          Editar
+                        </Button>
+                      </Table.Cell>
+                    )}
+                    {isAdmin && (
+                      <Table.Cell>
+                        <Modal
+                          confirmFunc={() => onDelete(bmiEvaluation.id)}
+                          btnTitle="Excluir"
+                          cancelBtnTitle="Cancelar"
+                          confirmBtnTitle="Excluir"
+                          btnColorPalette="red"
+                          modalTitle="Tem certeza que deseja excluir?"
+                          modalDescription="Esta ação é irreversível"
+                        />
+                      </Table.Cell>
+                    )}
                   </Table.Row>
                 ))}
               </Table.Body>
             </Table.Root>
-
+            {bmiEvaluations?.data.length === 0 && (
+              <Text textAlign={"center"} mt={10} mb={10} fontWeight={"bold"}>
+                Nenhuma avaliação encontrada
+              </Text>
+            )}
             <Pagination.Root
               count={bmiEvaluations?.total}
               pageSize={LIMIT}

@@ -7,15 +7,13 @@ import { login } from "@/services/auth/login";
 export function useLogin(onSuccess?: () => void) {
   return useMutation({
     mutationFn: login,
-    onSuccess: (data) => {
+    onSuccess: () => {
       toaster.create({
         title: `Login feito com sucesso`,
         type: "success",
         duration: 3000,
         closable: true,
       });
-
-      localStorage.setItem("user", JSON.stringify(data.user));
 
       if (onSuccess) {
         onSuccess();
