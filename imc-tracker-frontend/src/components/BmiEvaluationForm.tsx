@@ -22,6 +22,7 @@ import { EditBmiEvaluation } from "@/common/interfaces/bmi-evaluation/edit-bmi-e
 import { useRouter } from "next/navigation";
 import { useUserStorage } from "@/hooks/useUserStorage";
 import { useEffect } from "react";
+import { Situacao } from "@/common/enums/situacao.enum";
 
 export default function BmiEvaluation({
   isEdit,
@@ -42,10 +43,12 @@ export default function BmiEvaluation({
 
   const { data: teachers, isLoading: loadingTeachers } = useGetUsers({
     role: Perfil.PROFESSOR,
+    situation: Situacao.ATIVO,
   });
 
   const { data: students, isLoading: loadingStudents } = useGetUsers({
     role: Perfil.ALUNO,
+    situation: Situacao.ATIVO,
   });
 
   const {
