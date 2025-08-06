@@ -3,7 +3,7 @@ import { decodeToken, generateToken, isTokenValid } from "../common/utils/jwt";
 import { AppDataSource } from "../database/data-source";
 import { User } from "../models/userModel";
 import { HttpError } from "../common/HttpError";
-import userTokenRepository from "./userTokenService";
+import userTokenService from "./userTokenService";
 import { UserToken } from "../models/userTokenModel";
 import {
   ACCESS_TOKEN_EXPIRES_IN,
@@ -53,7 +53,7 @@ async function login(
     expiracao_token: new Date(Date.now() + ONE_DAY_IN_MS),
   };
 
-  await userTokenRepository.createUserToken(userTokenBody as UserToken);
+  await userTokenService.createUserToken(userTokenBody as UserToken);
 
   return {
     accessToken,
@@ -67,6 +67,31 @@ async function login(
   };
 }
 
+async function logout(accessToken: string): Promise<void> {
+  if (!accessToken) {
+    throw new HttpError("Token não encontrado", 401);
+  }
+
+  const decodedToken = decodeToken(accessToken) as {
+    id: string;
+    perfil: string;
+  };
+
+  if (!decodedToken) {
+    throw new HttpError("Token inválido", 401);
+  }
+
+  const userId = decodedToken.id;
+  const userToken = await userTokenService.getUserTokenByUserId(userId);
+
+  if (!userToken) {
+    throw new HttpError("Refresh Token não encontrado", 401);
+  }
+
+  await userTokenService.deleteUserToken(userToken.id);
+
+  return;
+}
 async function refreshAccessToken(
   accessToken: string
 ): Promise<{ accessToken: string }> {
@@ -86,7 +111,7 @@ async function refreshAccessToken(
   const userId = decodedToken.id;
   const userRole = decodedToken.perfil;
 
-  const userToken = await userTokenRepository.getUserTokenByUserId(userId);
+  const userToken = await userTokenService.getUserTokenByUserId(userId);
 
   if (!userToken) {
     throw new HttpError("Refresh Token não encontrado", 401);
@@ -95,7 +120,7 @@ async function refreshAccessToken(
   const validToken = isTokenValid(userToken?.refresh_token!);
 
   if (!validToken) {
-    await userTokenRepository.deleteUserToken(userToken.id);
+    await userTokenService.deleteUserToken(userToken.id);
     throw new HttpError("Refresh Token inválido", 401);
   }
 
@@ -107,4 +132,4 @@ async function refreshAccessToken(
   return { accessToken: accessTokenRefreshed };
 }
 
-export default { login, refreshAccessToken };
+export default { login, refreshAccessToken, logout };

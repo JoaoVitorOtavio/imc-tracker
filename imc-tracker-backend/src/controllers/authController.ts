@@ -25,6 +25,26 @@ async function login(req: Request, res: Response, next: NextFunction) {
   }
 }
 
+async function logout(req: Request, res: Response, next: NextFunction) {
+  try {
+    const accessToken: string = req.cookies.accessToken;
+
+    await authService.logout(accessToken);
+
+    res.clearCookie(ACCESS_TOKEN, {
+      path: "/",
+      sameSite: "lax",
+      secure: false,
+    });
+
+    return res.sendStatus(204);
+  } catch (error) {
+    console.error("Erro ao fazer logout:", error);
+
+    next(error);
+  }
+}
+
 async function refreshAccessToken(
   req: Request,
   res: Response,
@@ -49,4 +69,4 @@ async function refreshAccessToken(
   }
 }
 
-export default { login, refreshAccessToken };
+export default { login, refreshAccessToken, logout };
