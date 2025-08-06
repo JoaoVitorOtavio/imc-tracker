@@ -23,7 +23,6 @@ customAxios.interceptors.response.use(
       } catch (refreshError) {
         console.error("Token refresh failed:", refreshError);
 
-        localStorage.removeItem("isAuthenticated");
         localStorage.removeItem("user");
 
         window.location.href = "/";

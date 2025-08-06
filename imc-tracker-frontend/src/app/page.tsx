@@ -2,7 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { Button, Card, Field, Flex, Input, Stack } from "@chakra-ui/react";
-import { useLogin } from "@/hooks/useLogin";
+import { useLogin } from "@/hooks/auth/useLogin";
 import { useRouter } from "next/navigation";
 
 type TLogin = {
