@@ -4,7 +4,7 @@ import { Box, Flex, Link, Text, Stack } from "@chakra-ui/react";
 
 export default function Footer() {
   return (
-    <Box bg="blue.500" color="white" py={12} mt={10}>
+    <Box bg="blue.500" color="white" py={12}>
       <Flex
         direction={{ base: "column", md: "row" }}
         maxW="6xl"
