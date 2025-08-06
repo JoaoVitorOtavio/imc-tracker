@@ -7,31 +7,36 @@ import {
   getBmiEvaluationSchema,
   updateBmiEvaluationSchema,
 } from "../common/validations/bmiEvaluationSchemas";
+import { JwtAuthMiddleWare } from "../common/middlewares/jwtMiddleware";
 
 const router = express.Router();
 
-router.get("/", bmiEvaluationController.getBmiEvaluations);
+router.get("/", JwtAuthMiddleWare, bmiEvaluationController.getBmiEvaluations);
 
 router.get(
   "/:id",
+  JwtAuthMiddleWare,
   validate(getBmiEvaluationSchema),
   bmiEvaluationController.getBmiEvaluation
 );
 
 router.post(
   "/",
+  JwtAuthMiddleWare,
   validate(createBmiEvaluationSchema),
   bmiEvaluationController.createBmiEvaluation
 );
 
 router.put(
   "/:id",
+  JwtAuthMiddleWare,
   validate(updateBmiEvaluationSchema),
   bmiEvaluationController.updateBmiEvaluation
 );
 
 router.delete(
   "/:id",
+  JwtAuthMiddleWare,
   validate(deleteBmiEvaluationSchema),
   bmiEvaluationController.deleteBmiEvaluation
 );
