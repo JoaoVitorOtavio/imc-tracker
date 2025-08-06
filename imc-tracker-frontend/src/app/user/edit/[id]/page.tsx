@@ -4,7 +4,7 @@ import Footer from "@/components/Footer";
 import Header from "@/components/Header/Header";
 import UserForm from "@/components/UserForm";
 import { useGetUser } from "@/hooks/user/useGetUser";
-import { Flex } from "@chakra-ui/react";
+import { Box, Center, Flex, Spinner, VStack, Text } from "@chakra-ui/react";
 import axios from "axios";
 import { useParams, notFound } from "next/navigation";
 import { useEffect } from "react";
@@ -31,7 +31,24 @@ export default function EditUser() {
   }, [error, userId]);
 
   if (isLoading) {
-    return <p>Carregando usuário...</p>;
+    return (
+      <Box
+        position="fixed"
+        inset={0}
+        bg="whiteAlpha.800"
+        zIndex={1000}
+        backdropFilter="blur(6px)"
+      >
+        <Center h="100vh">
+          <VStack gap={4}>
+            <Spinner color="teal.500" size="xl" />
+            <Text fontSize="lg" color="gray.600">
+              Carregando informações...
+            </Text>
+          </VStack>
+        </Center>
+      </Box>
+    );
   }
 
   if (isError || !user) {
