@@ -56,6 +56,7 @@ async function getUsers({
     order: {
       nome: "ASC",
     },
+    relations: ["avaliacoesFeitas", "avaliacoesRecebidas"],
   });
 
   return {

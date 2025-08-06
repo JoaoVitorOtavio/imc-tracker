@@ -1,6 +1,7 @@
 import { Situacao } from "../common/enums/situacao.enum";
 import { Perfil } from "../common/enums/perfil.enum";
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BmiEvaluation } from "./bmiEvaluationModel";
 
 @Entity("usuario")
 export class User {
@@ -25,6 +26,12 @@ export class User {
 
   @Column({ type: "text", length: 10, nullable: false })
   situacao: Situacao;
+
+  @OneToMany(() => BmiEvaluation, (avaliacao) => avaliacao.usuarioAvaliador)
+  avaliacoesFeitas: BmiEvaluation[];
+
+  @OneToMany(() => BmiEvaluation, (avaliacao) => avaliacao.usuarioAvaliado)
+  avaliacoesRecebidas: BmiEvaluation[];
 
   @Column({
     type: "text",
