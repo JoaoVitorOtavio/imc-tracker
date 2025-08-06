@@ -29,13 +29,16 @@ export default function UserForm({
 }) {
   const router = useRouter();
 
-  function onEditSuccess() {
+  function onCreateAndEditSuccess() {
     router.replace("/user/list");
   }
 
-  const { mutate: createUser, isPending: isCreateLoading } = useCreateUser();
-  const { mutate: editUser, isPending: isEditLoading } =
-    useEditUser(onEditSuccess);
+  const { mutate: createUser, isPending: isCreateLoading } = useCreateUser(
+    onCreateAndEditSuccess
+  );
+  const { mutate: editUser, isPending: isEditLoading } = useEditUser(
+    onCreateAndEditSuccess
+  );
 
   const {
     register,
