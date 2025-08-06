@@ -1,8 +1,10 @@
 "use client";
 
 import BmiEvaluation from "@/components/BmiEvaluationForm";
+import Footer from "@/components/Footer";
+import Header from "@/components/Header/Header";
 import { useGetBmiEvaluation } from "@/hooks/bmiEvaluation/useGetBmiEvaluation";
-import { Box, Center, Spinner, VStack, Text } from "@chakra-ui/react";
+import { Box, Center, Spinner, VStack, Text, Flex } from "@chakra-ui/react";
 import axios from "axios";
 import { notFound, useParams } from "next/navigation";
 import { useEffect } from "react";
@@ -49,8 +51,10 @@ export default function EditBmiEvaluation() {
   }
 
   return (
-    <div>
+    <Flex height={"100vh"} direction={"column"} justify={"space-between"}>
+      <Header />
       <BmiEvaluation isEdit bmiEvaluation={bmiEvaluationData!} />
-    </div>
+      <Footer />
+    </Flex>
   );
 }

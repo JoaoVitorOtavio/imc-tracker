@@ -66,12 +66,7 @@ export default function BmiEvaluation({
   const selectedStudent = watch("id_usuario_aluno");
 
   return (
-    <Flex
-      height={"100vh"}
-      align={"center"}
-      justify={"center"}
-      style={{ backgroundColor: "red" }}
-    >
+    <Flex align={"center"} justify={"center"} py={10}>
       <Card.Root maxW="lg" width={"100%"}>
         <Skeleton loading={loadingTeachers || loadingStudents}>
           <form
