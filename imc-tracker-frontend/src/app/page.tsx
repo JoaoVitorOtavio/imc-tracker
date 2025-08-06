@@ -3,6 +3,7 @@
 import { useForm } from "react-hook-form";
 import { Button, Card, Field, Flex, Input, Stack } from "@chakra-ui/react";
 import { useLogin } from "@/hooks/useLogin";
+import { useRouter } from "next/navigation";
 
 type TLogin = {
   usuario: string;
@@ -10,7 +11,12 @@ type TLogin = {
 };
 
 export default function Login() {
-  const { mutate: login, isPending } = useLogin();
+  const router = useRouter();
+
+  function onLoginSuccess() {
+    router.replace("/user/list");
+  }
+  const { mutate: login, isPending } = useLogin(onLoginSuccess);
 
   const {
     register,
@@ -19,12 +25,7 @@ export default function Login() {
   } = useForm<TLogin>();
 
   return (
-    <Flex
-      height={"100vh"}
-      align={"center"}
-      justify={"center"}
-      style={{ backgroundColor: "red" }}
-    >
+    <Flex height={"100vh"} align={"center"} justify={"center"}>
       <Card.Root maxW="lg" width={"100%"}>
         <form onSubmit={handleSubmit((data) => login(data))}>
           <Card.Header alignItems={"center"}>

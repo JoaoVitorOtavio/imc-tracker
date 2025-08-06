@@ -4,7 +4,7 @@ import { AxiosError } from "axios";
 import { ErrorResponse } from "@/common/interfaces/error-response.interface";
 import { login } from "@/services/auth/login";
 
-export function useLogin() {
+export function useLogin(onSuccess?: () => void) {
   return useMutation({
     mutationFn: login,
     onSuccess: (data) => {
@@ -14,8 +14,12 @@ export function useLogin() {
         duration: 3000,
         closable: true,
       });
-      console.log("DATA LOGIN", data);
-      // TODO: Salvar token dependendo de qual logica eu irei usar
+
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      if (onSuccess) {
+        onSuccess();
+      }
     },
     onError: (error: AxiosError<ErrorResponse>) => {
       const errorMessage =
