@@ -8,14 +8,21 @@ import {
   updateBmiEvaluationSchema,
 } from "../common/validations/bmiEvaluationSchemas";
 import { JwtAuthMiddleWare } from "../common/middlewares/jwtMiddleware";
+import { roleValidation } from "../common/middlewares/roleValidation";
 
 const router = express.Router();
 
-router.get("/", JwtAuthMiddleWare, bmiEvaluationController.getBmiEvaluations);
+router.get(
+  "/",
+  JwtAuthMiddleWare,
+  roleValidation("admin", "professor", "aluno"),
+  bmiEvaluationController.getBmiEvaluations
+);
 
 router.get(
   "/:id",
   JwtAuthMiddleWare,
+  roleValidation("admin", "professor"),
   validate(getBmiEvaluationSchema),
   bmiEvaluationController.getBmiEvaluation
 );
@@ -23,6 +30,7 @@ router.get(
 router.post(
   "/",
   JwtAuthMiddleWare,
+  roleValidation("admin", "professor"),
   validate(createBmiEvaluationSchema),
   bmiEvaluationController.createBmiEvaluation
 );
@@ -30,6 +38,7 @@ router.post(
 router.put(
   "/:id",
   JwtAuthMiddleWare,
+  roleValidation("admin", "professor"),
   validate(updateBmiEvaluationSchema),
   bmiEvaluationController.updateBmiEvaluation
 );
@@ -37,6 +46,7 @@ router.put(
 router.delete(
   "/:id",
   JwtAuthMiddleWare,
+  roleValidation("admin"),
   validate(deleteBmiEvaluationSchema),
   bmiEvaluationController.deleteBmiEvaluation
 );

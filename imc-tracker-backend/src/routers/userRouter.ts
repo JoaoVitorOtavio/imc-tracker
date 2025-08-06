@@ -8,14 +8,21 @@ import {
 } from "../common/validations/userSchemas";
 import { validate } from "../common/middlewares/validate";
 import { JwtAuthMiddleWare } from "../common/middlewares/jwtMiddleware";
+import { roleValidation } from "../common/middlewares/roleValidation";
 
 const router = express.Router();
 
-router.get("/", JwtAuthMiddleWare, userController.getUsers);
+router.get(
+  "/",
+  roleValidation("admin", "professor"),
+  JwtAuthMiddleWare,
+  userController.getUsers
+);
 
 router.get(
   "/:id",
   JwtAuthMiddleWare,
+  roleValidation("admin", "professor", "aluno"),
   validate(getUserSchema),
   userController.getUser
 );
@@ -23,6 +30,7 @@ router.get(
 router.post(
   "/",
   JwtAuthMiddleWare,
+  roleValidation("admin", "professor"),
   validate(createUserSchema),
   userController.createUser
 );
@@ -30,6 +38,7 @@ router.post(
 router.put(
   "/:id",
   JwtAuthMiddleWare,
+  roleValidation("admin", "professor"),
   validate(updateUserSchema),
   userController.updateUser
 );
@@ -37,6 +46,7 @@ router.put(
 router.delete(
   "/:id",
   JwtAuthMiddleWare,
+  roleValidation("admin"),
   validate(deleteUserSchema),
   userController.deleteUser
 );

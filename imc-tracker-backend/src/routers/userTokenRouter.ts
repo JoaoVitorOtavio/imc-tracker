@@ -8,14 +8,21 @@ import {
   updateUserTokenSchema,
 } from "../common/validations/userTokenSchemas";
 import { JwtAuthMiddleWare } from "../common/middlewares/jwtMiddleware";
+import { roleValidation } from "../common/middlewares/roleValidation";
 
 const router = express.Router();
 
-router.get("/", JwtAuthMiddleWare, userTokenController.getUsersTokens);
+router.get(
+  "/",
+  JwtAuthMiddleWare,
+  roleValidation("admin"),
+  userTokenController.getUsersTokens
+);
 
 router.get(
   "/:id",
   JwtAuthMiddleWare,
+  roleValidation("admin"),
   validate(getUserTokenSchema),
   userTokenController.getUserToken
 );
@@ -23,6 +30,7 @@ router.get(
 router.post(
   "/",
   JwtAuthMiddleWare,
+  roleValidation("admin"),
   validate(createUserTokenSchema),
   userTokenController.createUserToken
 );
@@ -30,6 +38,7 @@ router.post(
 router.put(
   "/:id",
   JwtAuthMiddleWare,
+  roleValidation("admin"),
   validate(updateUserTokenSchema),
   userTokenController.updateUserToken
 );
@@ -37,6 +46,7 @@ router.put(
 router.delete(
   "/:id",
   JwtAuthMiddleWare,
+  roleValidation("admin"),
   validate(deleteUserTokenSchema),
   userTokenController.deleteUserToken
 );
